@@ -1,6 +1,23 @@
 export type GrantStatus = 'not-started' | 'in-progress' | 'submitted' | 'won' | 'archived';
 
-export type GrantProgram = 'KPO' | 'FEnIKS' | 'CEF' | 'Horizon' | 'ERDF';
+export type GrantProgram = 
+  | 'KPO'           // Krajowy Plan Odbudowy (Poland)
+  | 'FEnIKS'        // Fundusz Europejski na Infrastrukturę, Klimat i Środowisko
+  | 'CEF'           // Connecting Europe Facility
+  | 'Horizon'       // Horizon Europe
+  | 'ERDF'          // European Regional Development Fund
+  | 'Creative'      // Creative Europe
+  | 'Erasmus'       // Erasmus+
+  | 'LIFE'          // LIFE Programme (Environment & Climate)
+  | 'Digital'       // Digital Europe Programme
+  | 'JTF'           // Just Transition Fund
+  | 'ESF+'          // European Social Fund Plus
+  | 'InvestEU'      // InvestEU Programme
+  | 'Interreg'      // Interreg (European Territorial Cooperation)
+  | 'EMFAF'         // European Maritime, Fisheries and Aquaculture Fund
+  | 'EAFRD'         // European Agricultural Fund for Rural Development
+  | 'GreenDeal'     // European Green Deal
+  | 'EU4Health';    // EU4Health Programme
 
 export interface Grant {
   id: string;

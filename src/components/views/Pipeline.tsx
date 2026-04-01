@@ -25,7 +25,26 @@ interface PipelineProps {
   onViewChange: (view: ViewType, grantId?: string) => void;
 }
 
-const programFilters: (GrantProgram | 'All')[] = ['All', 'KPO', 'FEnIKS', 'CEF', 'Horizon', 'ERDF'];
+const programFilters: (GrantProgram | 'All')[] = [
+  'All', 
+  'KPO', 
+  'FEnIKS', 
+  'CEF', 
+  'Horizon', 
+  'ERDF',
+  'Creative',
+  'Erasmus',
+  'LIFE',
+  'Digital',
+  'JTF',
+  'ESF+',
+  'InvestEU',
+  'Interreg',
+  'EMFAF',
+  'EAFRD',
+  'GreenDeal',
+  'EU4Health',
+];
 
 const statusConfig: Record<GrantStatus, { label: string; className: string }> = {
   'not-started': { label: 'Not started', className: 'status-not-started' },
@@ -41,6 +60,18 @@ const programColors: Record<GrantProgram, string> = {
   'CEF': 'bg-[#F59E0B]/15 text-[#F59E0B]',
   'Horizon': 'bg-[#8B5CF6]/15 text-[#8B5CF6]',
   'ERDF': 'bg-[#EC4899]/15 text-[#EC4899]',
+  'Creative': 'bg-[#F472B6]/15 text-[#F472B6]',
+  'Erasmus': 'bg-[#3B82F6]/15 text-[#3B82F6]',
+  'LIFE': 'bg-[#10B981]/15 text-[#10B981]',
+  'Digital': 'bg-[#06B6D4]/15 text-[#06B6D4]',
+  'JTF': 'bg-[#F97316]/15 text-[#F97316]',
+  'ESF+': 'bg-[#84CC16]/15 text-[#84CC16]',
+  'InvestEU': 'bg-[#6366F1]/15 text-[#6366F1]',
+  'Interreg': 'bg-[#14B8A6]/15 text-[#14B8A6]',
+  'EMFAF': 'bg-[#0EA5E9]/15 text-[#0EA5E9]',
+  'EAFRD': 'bg-[#65A30D]/15 text-[#65A30D]',
+  'GreenDeal': 'bg-[#22C55E]/15 text-[#22C55E]',
+  'EU4Health': 'bg-[#EF4444]/15 text-[#EF4444]',
 };
 
 export function Pipeline({ onViewChange }: PipelineProps) {
@@ -567,6 +598,18 @@ export function Pipeline({ onViewChange }: PipelineProps) {
                     <option value="CEF">CEF</option>
                     <option value="Horizon">Horizon</option>
                     <option value="ERDF">ERDF</option>
+                    <option value="Creative">Creative Europe</option>
+                    <option value="Erasmus">Erasmus+</option>
+                    <option value="LIFE">LIFE Programme</option>
+                    <option value="Digital">Digital Europe</option>
+                    <option value="JTF">Just Transition Fund</option>
+                    <option value="ESF+">ESF+</option>
+                    <option value="InvestEU">InvestEU</option>
+                    <option value="Interreg">Interreg</option>
+                    <option value="EMFAF">EMFAF</option>
+                    <option value="EAFRD">EAFRD</option>
+                    <option value="GreenDeal">Green Deal</option>
+                    <option value="EU4Health">EU4Health</option>
                   </select>
                 </div>
                 <div>
