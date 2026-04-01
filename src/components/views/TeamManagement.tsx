@@ -38,9 +38,9 @@ const mockTeam: TeamMember[] = [
 ];
 
 const roleConfig = {
-  admin: { label: 'Administrator', color: 'text-[#4F46E5]', bgColor: 'bg-[#4F46E5]/15', icon: Crown },
+  admin: { label: 'Administrator', color: 'text-accent', bgColor: 'bg-accent/15', icon: Crown },
   manager: { label: 'Manager', color: 'text-[#22C55E]', bgColor: 'bg-[#22C55E]/15', icon: Shield },
-  member: { label: 'Member', color: 'text-[#A9B3D0]', bgColor: 'bg-[#161F32]', icon: User },
+  member: { label: 'Member', color: 'text-secondary', bgColor: 'bg-tertiary', icon: User },
 };
 
 export function TeamManagement() {
@@ -130,8 +130,8 @@ export function TeamManagement() {
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-[#F3F6FF]">Team Management</h1>
-              <p className="text-[#A9B3D0]">Manage your grant team members and permissions</p>
+              <h1 className="text-2xl font-semibold text-primary">Team Management</h1>
+              <p className="text-secondary">Manage your grant team members and permissions</p>
             </div>
           </div>
         </div>
@@ -148,12 +148,12 @@ export function TeamManagement() {
       <div className="grid grid-cols-4 gap-5 mb-8">
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#4F46E5]/15 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-[#4F46E5]" />
+            <div className="w-12 h-12 bg-accent/15 rounded-xl flex items-center justify-center">
+              <Users className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Total Members</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{team.length}</p>
+              <p className="text-secondary text-sm">Total Members</p>
+              <p className="text-primary text-2xl font-semibold">{team.length}</p>
             </div>
           </div>
         </div>
@@ -163,8 +163,8 @@ export function TeamManagement() {
               <CheckCircle2 className="w-6 h-6 text-[#22C55E]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Active</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{activeCount}</p>
+              <p className="text-secondary text-sm">Active</p>
+              <p className="text-primary text-2xl font-semibold">{activeCount}</p>
             </div>
           </div>
         </div>
@@ -174,8 +174,8 @@ export function TeamManagement() {
               <Clock className="w-6 h-6 text-[#F59E0B]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Pending</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{pendingCount}</p>
+              <p className="text-secondary text-sm">Pending</p>
+              <p className="text-primary text-2xl font-semibold">{pendingCount}</p>
             </div>
           </div>
         </div>
@@ -185,8 +185,8 @@ export function TeamManagement() {
               <Shield className="w-6 h-6 text-[#8B5CF6]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Admins</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{team.filter(m => m.role === 'admin').length}</p>
+              <p className="text-secondary text-sm">Admins</p>
+              <p className="text-primary text-2xl font-semibold">{team.filter(m => m.role === 'admin').length}</p>
             </div>
           </div>
         </div>
@@ -195,13 +195,13 @@ export function TeamManagement() {
       {/* Filters */}
       <div className="flex items-center justify-between mb-6">
         <div className="relative w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A9B3D0]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
           <input
             type="text"
             placeholder="Search team members..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#161F32] border border-[#273155] rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+            className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2.5 text-sm text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
           />
         </div>
         <button className="btn-secondary flex items-center gap-2">
@@ -214,13 +214,13 @@ export function TeamManagement() {
       <div className="card-dark overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="bg-[#161F32] border-b border-[#273155]">
-              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Member</th>
-              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Role</th>
-              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Department</th>
-              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Status</th>
-              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Grants</th>
-              <th className="text-right text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Actions</th>
+            <tr className="bg-tertiary border-b border-theme">
+              <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Member</th>
+              <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Role</th>
+              <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Department</th>
+              <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Status</th>
+              <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Grants</th>
+              <th className="text-right text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -230,7 +230,7 @@ export function TeamManagement() {
               return (
                 <tr 
                   key={member.id} 
-                  className={`team-row border-b border-[#273155]/50 hover:bg-[#161F32]/50 transition-colors ${index % 2 === 1 ? 'bg-[#161F32]/20' : ''}`}
+                  className={`team-row border-b border-theme/50 hover:bg-tertiary/50 transition-colors ${index % 2 === 1 ? 'bg-tertiary/20' : ''}`}
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
@@ -240,8 +240,8 @@ export function TeamManagement() {
                         </span>
                       </div>
                       <div>
-                        <p className="text-[#F3F6FF] font-medium">{member.name}</p>
-                        <p className="text-[#A9B3D0] text-sm">{member.email}</p>
+                        <p className="text-primary font-medium">{member.name}</p>
+                        <p className="text-secondary text-sm">{member.email}</p>
                       </div>
                     </div>
                   </td>
@@ -252,7 +252,7 @@ export function TeamManagement() {
                     </span>
                   </td>
                   <td className="px-5 py-4">
-                    <span className="text-[#F3F6FF] text-sm">{member.department}</span>
+                    <span className="text-primary text-sm">{member.department}</span>
                   </td>
                   <td className="px-5 py-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -269,19 +269,19 @@ export function TeamManagement() {
                     </span>
                   </td>
                   <td className="px-5 py-4">
-                    <span className="text-[#F3F6FF] text-sm font-medium">{member.grants}</span>
+                    <span className="text-primary text-sm font-medium">{member.grants}</span>
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-1">
                       <button 
                         onClick={() => handleEdit(member)}
-                        className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                        className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleRemove(member.id)}
-                        className="p-2 text-[#A9B3D0] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
+                        className="p-2 text-secondary hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -295,7 +295,7 @@ export function TeamManagement() {
 
         {filteredTeam.length === 0 && (
           <div className="p-12 text-center">
-            <p className="text-[#A9B3D0]">No team members found</p>
+            <p className="text-secondary">No team members found</p>
           </div>
         )}
       </div>
@@ -303,36 +303,36 @@ export function TeamManagement() {
       {/* Invite Modal */}
       {showInviteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[400px]">
+          <div className="bg-secondary border border-theme rounded-2xl p-6 w-[400px]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#F3F6FF]">Invite Team Member</h2>
+              <h2 className="text-xl font-semibold text-primary">Invite Team Member</h2>
               <button 
                 onClick={() => setShowInviteModal(false)}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+                className="text-secondary hover:text-primary"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block">Email Address</label>
+                <label className="text-secondary text-sm mb-2 block">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A9B3D0]" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="colleague@example.com"
-                    className="w-full bg-[#161F32] border border-[#273155] rounded-xl pl-9 pr-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                    className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block">Role</label>
+                <label className="text-secondary text-sm mb-2 block">Role</label>
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as TeamMember['role'])}
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 >
                   <option value="member">Member - Can view and edit assigned grants</option>
                   <option value="manager">Manager - Can manage grants and team members</option>
@@ -361,43 +361,43 @@ export function TeamManagement() {
       {/* Edit Member Modal */}
       {showEditModal && editingMember && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[450px]">
+          <div className="bg-secondary border border-theme rounded-2xl p-6 w-[450px]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#F3F6FF]">Edit Team Member</h2>
+              <h2 className="text-xl font-semibold text-primary">Edit Team Member</h2>
               <button 
                 onClick={() => setShowEditModal(false)}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+                className="text-secondary hover:text-primary"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block">Name</label>
+                <label className="text-secondary text-sm mb-2 block">Name</label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   placeholder="Full name"
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 />
               </div>
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block">Department</label>
+                <label className="text-secondary text-sm mb-2 block">Department</label>
                 <input
                   type="text"
                   value={editDepartment}
                   onChange={(e) => setEditDepartment(e.target.value)}
                   placeholder="e.g., Finance, Legal"
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 />
               </div>
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block">Role</label>
+                <label className="text-secondary text-sm mb-2 block">Role</label>
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as TeamMember['role'])}
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 >
                   <option value="member">Member - Can view and edit assigned grants</option>
                   <option value="manager">Manager - Can manage grants and team members</option>

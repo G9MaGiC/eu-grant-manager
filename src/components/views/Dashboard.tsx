@@ -51,7 +51,7 @@ function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1.2 }: { v
   };
 
   return (
-    <span ref={ref} className="mono text-3xl font-semibold text-[#F3F6FF]">
+    <span ref={ref} className="mono text-3xl font-semibold text-primary">
       {prefix}{formatValue(displayValue)}{suffix}
     </span>
   );
@@ -169,9 +169,9 @@ export function Dashboard({ onViewChange }: DashboardProps) {
   };
 
   const getUrgencyText = (daysLeft: number) => {
-    if (daysLeft <= 3) return 'text-[#EF4444]';
-    if (daysLeft <= 7) return 'text-[#F59E0B]';
-    return 'text-[#A9B3D0]';
+    if (daysLeft <= 3) return 'text-red-500';
+    if (daysLeft <= 7) return 'text-amber-500';
+    return 'text-secondary';
   };
 
   // Mock chart data
@@ -183,13 +183,13 @@ export function Dashboard({ onViewChange }: DashboardProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#F3F6FF]">Dashboard</h1>
-          <p className="text-[#A9B3D0] mt-1">Here's what needs attention this week.</p>
+          <h1 className="text-2xl font-semibold text-primary">Dashboard</h1>
+          <p className="text-secondary mt-1">Here's what needs attention this week.</p>
         </div>
         <button 
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors disabled:opacity-50"
+          className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'loading-spinner' : ''}`} />
         </button>
@@ -200,15 +200,15 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <p className="text-[#A9B3D0] text-sm mb-1">Active grants</p>
+              <p className="text-secondary text-sm mb-1">Active grants</p>
               <AnimatedNumber value={dashboardStats.activeGrants} />
-              <div className="flex items-center gap-1 mt-2 text-[#22C55E] text-xs">
+              <div className="flex items-center gap-1 mt-2 text-green-500 text-xs">
                 <ArrowUpRight className="w-3 h-3" />
                 <span>+2 this month</span>
               </div>
             </div>
-            <div className="w-12 h-12 bg-[#4F46E5]/15 rounded-xl flex items-center justify-center group-hover:bg-[#4F46E5]/25 transition-colors">
-              <TrendingUp className="w-6 h-6 text-[#4F46E5]" />
+            <div className="w-12 h-12 bg-accent/15 rounded-xl flex items-center justify-center group-hover:bg-accent/25 transition-colors">
+              <TrendingUp className="w-6 h-6 text-accent" />
             </div>
           </div>
           <MiniChart data={[8, 9, 10, 11, 11, 12]} color="#4F46E5" />
@@ -217,15 +217,15 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <p className="text-[#A9B3D0] text-sm mb-1">Funding pipeline</p>
+              <p className="text-secondary text-sm mb-1">Funding pipeline</p>
               <AnimatedNumber value={dashboardStats.fundingPipeline} prefix="€" />
-              <div className="flex items-center gap-1 mt-2 text-[#22C55E] text-xs">
+              <div className="flex items-center gap-1 mt-2 text-green-500 text-xs">
                 <ArrowUpRight className="w-3 h-3" />
                 <span>+€850K from last month</span>
               </div>
             </div>
             <div className="w-12 h-12 bg-[#22C55E]/15 rounded-xl flex items-center justify-center group-hover:bg-[#22C55E]/25 transition-colors">
-              <Euro className="w-6 h-6 text-[#22C55E]" />
+              <Euro className="w-6 h-6 text-green-500" />
             </div>
           </div>
           <MiniChart data={pipelineData} color="#22C55E" />
@@ -234,15 +234,15 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <p className="text-[#A9B3D0] text-sm mb-1">Submissions this month</p>
+              <p className="text-secondary text-sm mb-1">Submissions this month</p>
               <AnimatedNumber value={dashboardStats.submissionsThisMonth} />
-              <div className="flex items-center gap-1 mt-2 text-[#A9B3D0] text-xs">
+              <div className="flex items-center gap-1 mt-2 text-secondary text-xs">
                 <Target className="w-3 h-3" />
                 <span>Target: 5</span>
               </div>
             </div>
             <div className="w-12 h-12 bg-[#F59E0B]/15 rounded-xl flex items-center justify-center group-hover:bg-[#F59E0B]/25 transition-colors">
-              <FileCheck className="w-6 h-6 text-[#F59E0B]" />
+              <FileCheck className="w-6 h-6 text-amber-500" />
             </div>
           </div>
           <MiniChart data={submissionsData} color="#F59E0B" />
@@ -255,14 +255,14 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         <div ref={deadlinesRef} className="col-span-3 card-dark p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <h2 className="text-lg font-semibold text-[#F3F6FF]">Upcoming deadlines</h2>
-              <span className="px-2 py-0.5 bg-[#EF4444]/15 text-[#EF4444] text-xs rounded-full">
+              <h2 className="text-lg font-semibold text-primary">Upcoming deadlines</h2>
+              <span className="px-2 py-0.5 bg-[#EF4444]/15 text-red-500 text-xs rounded-full">
                 {upcomingDeadlines.filter(d => d.daysLeft <= 7).length} urgent
               </span>
             </div>
             <button 
               onClick={() => onViewChange('pipeline')}
-              className="text-[#4F46E5] text-sm hover:underline flex items-center gap-1"
+              className="text-accent text-sm hover:underline flex items-center gap-1"
             >
               View all <ChevronRight className="w-4 h-4" />
             </button>
@@ -279,20 +279,20 @@ export function Dashboard({ onViewChange }: DashboardProps) {
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       deadline.daysLeft <= 3 ? 'bg-[#EF4444]/15' : 
-                      deadline.daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-[#4F46E5]/15'
+                      deadline.daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-accent/15'
                     }`}>
                       <Clock className={`w-5 h-5 ${
-                        deadline.daysLeft <= 3 ? 'text-[#EF4444]' : 
-                        deadline.daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-[#4F46E5]'
+                        deadline.daysLeft <= 3 ? 'text-red-500' : 
+                        deadline.daysLeft <= 7 ? 'text-amber-500' : 'text-accent'
                       }`} />
                     </div>
                     <div>
-                      <p className="text-[#F3F6FF] font-medium">{deadline.grantName}</p>
-                      <p className="text-[#A9B3D0] text-sm">{grant?.program} Program • €{(grant?.estimatedValue || 0) / 1000000}M</p>
+                      <p className="text-primary font-medium">{deadline.grantName}</p>
+                      <p className="text-secondary text-sm">{grant?.program} Program • €{(grant?.estimatedValue || 0) / 1000000}M</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[#F3F6FF] font-medium mono">{deadline.deadline}</p>
+                    <p className="text-primary font-medium mono">{deadline.deadline}</p>
                     <p className={`text-sm ${getUrgencyText(deadline.daysLeft)}`}>
                       {deadline.daysLeft === 0 ? 'Due today!' : 
                        deadline.daysLeft === 1 ? '1 day left' : 
@@ -307,62 +307,62 @@ export function Dashboard({ onViewChange }: DashboardProps) {
 
         {/* Quick Actions */}
         <div ref={actionsRef} className="col-span-2 card-dark p-5">
-          <h2 className="text-lg font-semibold text-[#F3F6FF] mb-4">Quick actions</h2>
+          <h2 className="text-lg font-semibold text-primary mb-4">Quick actions</h2>
           <div className="space-y-3">
             <button 
               onClick={() => handleQuickAction('find')}
-              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+              className="action-btn w-full flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
             >
-              <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center group-hover:bg-[#4F46E5]/25 transition-colors">
-                <Plus className="w-5 h-5 text-[#4F46E5]" />
+              <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center group-hover:bg-accent/25 transition-colors">
+                <Plus className="w-5 h-5 text-accent" />
               </div>
               <div className="text-left flex-1">
-                <p className="text-[#F3F6FF] font-medium">Find new grants</p>
-                <p className="text-[#A9B3D0] text-sm">Discover opportunities</p>
+                <p className="text-primary font-medium">Find new grants</p>
+                <p className="text-secondary text-sm">Discover opportunities</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+              <ChevronRight className="w-4 h-4 text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </button>
 
             <button 
               onClick={() => handleQuickAction('draft')}
-              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+              className="action-btn w-full flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
             >
               <div className="w-10 h-10 bg-[#22C55E]/15 rounded-lg flex items-center justify-center group-hover:bg-[#22C55E]/25 transition-colors">
-                <FileText className="w-5 h-5 text-[#22C55E]" />
+                <FileText className="w-5 h-5 text-green-500" />
               </div>
               <div className="text-left flex-1">
-                <p className="text-[#F3F6FF] font-medium">Draft application</p>
-                <p className="text-[#A9B3D0] text-sm">Continue writing</p>
+                <p className="text-primary font-medium">Draft application</p>
+                <p className="text-secondary text-sm">Continue writing</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+              <ChevronRight className="w-4 h-4 text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </button>
 
             <button 
               onClick={() => handleQuickAction('upload')}
-              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+              className="action-btn w-full flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
             >
               <div className="w-10 h-10 bg-[#F59E0B]/15 rounded-lg flex items-center justify-center group-hover:bg-[#F59E0B]/25 transition-colors">
-                <Upload className="w-5 h-5 text-[#F59E0B]" />
+                <Upload className="w-5 h-5 text-amber-500" />
               </div>
               <div className="text-left flex-1">
-                <p className="text-[#F3F6FF] font-medium">Upload document</p>
-                <p className="text-[#A9B3D0] text-sm">Add to grant folder</p>
+                <p className="text-primary font-medium">Upload document</p>
+                <p className="text-secondary text-sm">Add to grant folder</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+              <ChevronRight className="w-4 h-4 text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </button>
 
             <button 
               onClick={() => handleQuickAction('report')}
-              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+              className="action-btn w-full flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
             >
               <div className="w-10 h-10 bg-[#8B5CF6]/15 rounded-lg flex items-center justify-center group-hover:bg-[#8B5CF6]/25 transition-colors">
                 <BarChart3 className="w-5 h-5 text-[#8B5CF6]" />
               </div>
               <div className="text-left flex-1">
-                <p className="text-[#F3F6FF] font-medium">Generate report</p>
-                <p className="text-[#A9B3D0] text-sm">Export submission data</p>
+                <p className="text-primary font-medium">Generate report</p>
+                <p className="text-secondary text-sm">Export submission data</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+              <ChevronRight className="w-4 h-4 text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
             </button>
           </div>
         </div>
@@ -373,27 +373,27 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         {/* Recent Activity */}
         <div ref={recentRef} className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#F3F6FF]">Recent activity</h2>
-            <button className="text-[#A9B3D0] hover:text-[#F3F6FF] text-sm">
+            <h2 className="text-lg font-semibold text-primary">Recent activity</h2>
+            <button className="text-secondary hover:text-primary text-sm">
               View all
             </button>
           </div>
           <div className="space-y-3">
             {[
-              { action: 'Document uploaded', item: 'Budget_Template.xlsx', grant: 'KPO Energy Retrofit', time: '2 hours ago', icon: Upload, color: 'text-[#F59E0B]' },
-              { action: 'Application submitted', item: 'CEF Transport Corridor', grant: 'Submitted to portal', time: 'Yesterday', icon: CheckCircle2, color: 'text-[#22C55E]' },
-              { action: 'Task completed', item: 'Draft project narrative', grant: 'FEnIKS Digital Services', time: '2 days ago', icon: FileCheck, color: 'text-[#4F46E5]' },
+              { action: 'Document uploaded', item: 'Budget_Template.xlsx', grant: 'KPO Energy Retrofit', time: '2 hours ago', icon: Upload, color: 'text-amber-500' },
+              { action: 'Application submitted', item: 'CEF Transport Corridor', grant: 'Submitted to portal', time: 'Yesterday', icon: CheckCircle2, color: 'text-green-500' },
+              { action: 'Task completed', item: 'Draft project narrative', grant: 'FEnIKS Digital Services', time: '2 days ago', icon: FileCheck, color: 'text-accent' },
               { action: 'Grant added', item: 'Smart City Data Platform', grant: 'KPO Program', time: '3 days ago', icon: Plus, color: 'text-[#8B5CF6]' },
             ].map((activity, i) => (
-              <div key={i} className="recent-item flex items-center gap-4 p-3 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors cursor-pointer">
-                <div className={`w-9 h-9 bg-[#161F32] rounded-lg flex items-center justify-center`}>
+              <div key={i} className="recent-item flex items-center gap-4 p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer">
+                <div className={`w-9 h-9 bg-tertiary rounded-lg flex items-center justify-center`}>
                   <activity.icon className={`w-4 h-4 ${activity.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[#F3F6FF] text-sm font-medium">{activity.action}</p>
-                  <p className="text-[#A9B3D0] text-xs truncate">{activity.item} • {activity.grant}</p>
+                  <p className="text-primary text-sm font-medium">{activity.action}</p>
+                  <p className="text-secondary text-xs truncate">{activity.item} • {activity.grant}</p>
                 </div>
-                <span className="text-[#A9B3D0] text-xs">{activity.time}</span>
+                <span className="text-secondary text-xs">{activity.time}</span>
               </div>
             ))}
           </div>
@@ -402,8 +402,8 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         {/* Performance Summary */}
         <div className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#F3F6FF]">Performance</h2>
-            <button className="p-1.5 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors">
+            <h2 className="text-lg font-semibold text-primary">Performance</h2>
+            <button className="p-1.5 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors">
               <MoreHorizontal className="w-4 h-4" />
             </button>
           </div>
@@ -411,46 +411,46 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[#A9B3D0] text-sm">Success rate</span>
-                <span className="text-[#22C55E] font-medium">67%</span>
+                <span className="text-secondary text-sm">Success rate</span>
+                <span className="text-green-500 font-medium">67%</span>
               </div>
-              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
+              <div className="h-2 bg-tertiary rounded-full overflow-hidden">
                 <div className="h-full w-[67%] bg-[#22C55E] rounded-full" />
               </div>
-              <p className="text-[#A9B3D0] text-xs mt-1">4 won out of 6 submitted</p>
+              <p className="text-secondary text-xs mt-1">4 won out of 6 submitted</p>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[#A9B3D0] text-sm">Application completion</span>
-                <span className="text-[#4F46E5] font-medium">83%</span>
+                <span className="text-secondary text-sm">Application completion</span>
+                <span className="text-accent font-medium">83%</span>
               </div>
-              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
-                <div className="h-full w-[83%] bg-[#4F46E5] rounded-full" />
+              <div className="h-2 bg-tertiary rounded-full overflow-hidden">
+                <div className="h-full w-[83%] bg-accent rounded-full" />
               </div>
-              <p className="text-[#A9B3D0] text-xs mt-1">5 of 6 sections complete</p>
+              <p className="text-secondary text-xs mt-1">5 of 6 sections complete</p>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[#A9B3D0] text-sm">Document readiness</span>
-                <span className="text-[#F59E0B] font-medium">72%</span>
+                <span className="text-secondary text-sm">Document readiness</span>
+                <span className="text-amber-500 font-medium">72%</span>
               </div>
-              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
+              <div className="h-2 bg-tertiary rounded-full overflow-hidden">
                 <div className="h-full w-[72%] bg-[#F59E0B] rounded-full" />
               </div>
-              <p className="text-[#A9B3D0] text-xs mt-1">18 of 25 documents ready</p>
+              <p className="text-secondary text-xs mt-1">18 of 25 documents ready</p>
             </div>
 
-            <div className="pt-3 border-t border-[#273155]">
+            <div className="pt-3 border-t border-theme">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#A9B3D0]" />
-                  <span className="text-[#A9B3D0] text-sm">Next milestone</span>
+                  <Calendar className="w-4 h-4 text-secondary" />
+                  <span className="text-secondary text-sm">Next milestone</span>
                 </div>
-                <span className="text-[#F3F6FF] text-sm font-medium">Mar 18</span>
+                <span className="text-primary text-sm font-medium">Mar 18</span>
               </div>
-              <p className="text-[#A9B3D0] text-xs mt-1 ml-6">KPO Energy Retrofit submission</p>
+              <p className="text-secondary text-xs mt-1 ml-6">KPO Energy Retrofit submission</p>
             </div>
           </div>
         </div>
@@ -458,15 +458,15 @@ export function Dashboard({ onViewChange }: DashboardProps) {
 
       {/* Alert Banner */}
       <div className="flex items-center gap-3 p-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-xl">
-        <AlertCircle className="w-5 h-5 text-[#F59E0B] flex-shrink-0" />
+        <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
         <div className="flex-1">
-          <p className="text-[#F3F6FF] text-sm">
+          <p className="text-primary text-sm">
             <span className="font-medium">Action required:</span> KPO Energy Retrofit deadline is in 3 days. Finalize budget table and prepare for submission.
           </p>
         </div>
         <button 
           onClick={() => handleGrantClick('1')}
-          className="px-4 py-2 bg-[#F59E0B]/20 hover:bg-[#F59E0B]/30 text-[#F59E0B] text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+          className="px-4 py-2 bg-[#F59E0B]/20 hover:bg-[#F59E0B]/30 text-amber-500 text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
         >
           View grant →
         </button>

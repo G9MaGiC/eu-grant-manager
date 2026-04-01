@@ -177,8 +177,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-[#F3F6FF]">AI Grant Recommendations</h1>
-              <p className="text-[#A9B3D0]">Personalized funding opportunities based on your profile</p>
+              <h1 className="text-2xl font-semibold text-primary">AI Grant Recommendations</h1>
+              <p className="text-secondary">Personalized funding opportunities based on your profile</p>
             </div>
           </div>
         </div>
@@ -197,12 +197,12 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
       <div className="grid grid-cols-4 gap-5 mb-8">
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#4F46E5]/15 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-[#4F46E5]" />
+            <div className="w-12 h-12 bg-accent/15 rounded-xl flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Recommendations</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{recommendations.length}</p>
+              <p className="text-secondary text-sm">Recommendations</p>
+              <p className="text-primary text-2xl font-semibold">{recommendations.length}</p>
             </div>
           </div>
         </div>
@@ -212,8 +212,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <TrendingUp className="w-6 h-6 text-[#22C55E]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Avg Match Score</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{avgMatchScore}%</p>
+              <p className="text-secondary text-sm">Avg Match Score</p>
+              <p className="text-primary text-2xl font-semibold">{avgMatchScore}%</p>
             </div>
           </div>
         </div>
@@ -223,8 +223,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <Euro className="w-6 h-6 text-[#F59E0B]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Potential Value</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">€{(totalPotentialValue / 1000000).toFixed(1)}M</p>
+              <p className="text-secondary text-sm">Potential Value</p>
+              <p className="text-primary text-2xl font-semibold">€{(totalPotentialValue / 1000000).toFixed(1)}M</p>
             </div>
           </div>
         </div>
@@ -234,8 +234,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <Bookmark className="w-6 h-6 text-[#8B5CF6]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Saved</p>
-              <p className="text-[#F3F6FF] text-2xl font-semibold">{recommendations.filter(r => r.saved).length}</p>
+              <p className="text-secondary text-sm">Saved</p>
+              <p className="text-primary text-2xl font-semibold">{recommendations.filter(r => r.saved).length}</p>
             </div>
           </div>
         </div>
@@ -254,8 +254,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               onClick={() => setFilter(f.id as typeof filter)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                 filter === f.id
-                  ? 'bg-[#4F46E5] text-white'
-                  : 'bg-[#161F32] text-[#A9B3D0] hover:text-[#F3F6FF]'
+                  ? 'bg-accent text-white'
+                  : 'bg-tertiary text-secondary hover:text-primary'
               }`}
             >
               {f.label}
@@ -269,7 +269,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
         </div>
         <button 
           onClick={() => setShowFilters(!showFilters)}
-          className={`btn-secondary flex items-center gap-2 ${showFilters ? 'bg-[#4F46E5]/15 text-[#4F46E5]' : ''}`}
+          className={`btn-secondary flex items-center gap-2 ${showFilters ? 'bg-accent/15 text-accent' : ''}`}
         >
           <Filter className="w-4 h-4" />
           Filters
@@ -280,15 +280,15 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
       {showFilters && (
         <div className="card-dark p-4 mb-6">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[#A9B3D0] text-sm mr-2">Categories:</span>
+            <span className="text-secondary text-sm mr-2">Categories:</span>
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => toggleCategory(category)}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
                   selectedCategories.includes(category)
-                    ? 'bg-[#4F46E5] text-white'
-                    : 'bg-[#161F32] text-[#A9B3D0] hover:text-[#F3F6FF]'
+                    ? 'bg-accent text-white'
+                    : 'bg-tertiary text-secondary hover:text-primary'
                 }`}
               >
                 {category}
@@ -297,7 +297,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
             {selectedCategories.length > 0 && (
               <button
                 onClick={() => setSelectedCategories([])}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF] text-sm ml-2"
+                className="text-secondary hover:text-primary text-sm ml-2"
               >
                 Clear
               </button>
@@ -318,20 +318,20 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                   rec.matchScore >= 90 ? 'bg-[#22C55E]/15' :
-                  rec.matchScore >= 80 ? 'bg-[#4F46E5]/15' : 'bg-[#F59E0B]/15'
+                  rec.matchScore >= 80 ? 'bg-accent/15' : 'bg-[#F59E0B]/15'
                 }`}>
                   <span className={`text-lg font-bold ${
                     rec.matchScore >= 90 ? 'text-[#22C55E]' :
-                    rec.matchScore >= 80 ? 'text-[#4F46E5]' : 'text-[#F59E0B]'
+                    rec.matchScore >= 80 ? 'text-accent' : 'text-[#F59E0B]'
                   }`}>
                     {rec.matchScore}%
                   </span>
                 </div>
                 <div>
-                  <span className="px-2 py-0.5 bg-[#4F46E5]/15 text-[#4F46E5] text-xs rounded-full">
+                  <span className="px-2 py-0.5 bg-accent/15 text-accent text-xs rounded-full">
                     {rec.program}
                   </span>
-                  <p className="text-[#A9B3D0] text-xs mt-1 flex items-center gap-1">
+                  <p className="text-secondary text-xs mt-1 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     Deadline: {rec.deadline}
                   </p>
@@ -341,7 +341,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                 <button
                   onClick={() => toggleSave(rec.id)}
                   className={`p-2 rounded-lg transition-colors ${
-                    rec.saved ? 'text-[#4F46E5] bg-[#4F46E5]/15' : 'text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32]'
+                    rec.saved ? 'text-accent bg-accent/15' : 'text-secondary hover:text-primary hover:bg-tertiary'
                   }`}
                 >
                   <Bookmark className={`w-4 h-4 ${rec.saved ? 'fill-current' : ''}`} />
@@ -349,7 +349,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                 <button
                   onClick={() => toggleNotify(rec.id)}
                   className={`p-2 rounded-lg transition-colors ${
-                    rec.notified ? 'text-[#4F46E5] bg-[#4F46E5]/15' : 'text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32]'
+                    rec.notified ? 'text-accent bg-accent/15' : 'text-secondary hover:text-primary hover:bg-tertiary'
                   }`}
                 >
                   <Bell className={`w-4 h-4 ${rec.notified ? 'fill-current' : ''}`} />
@@ -358,22 +358,22 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
             </div>
 
             {/* Content */}
-            <h3 className="text-[#F3F6FF] font-semibold mb-2">{rec.title}</h3>
-            <p className="text-[#A9B3D0] text-sm mb-4 line-clamp-2">{rec.description}</p>
+            <h3 className="text-primary font-semibold mb-2">{rec.title}</h3>
+            <p className="text-secondary text-sm mb-4 line-clamp-2">{rec.description}</p>
 
             {/* Categories */}
             <div className="flex flex-wrap gap-2 mb-4">
               {rec.categories.map((cat, i) => (
-                <span key={i} className="px-2 py-1 bg-[#161F32] text-[#A9B3D0] text-xs rounded-lg">
+                <span key={i} className="px-2 py-1 bg-tertiary text-secondary text-xs rounded-lg">
                   {cat}
                 </span>
               ))}
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-4 border-t border-[#273155]">
+            <div className="flex items-center justify-between pt-4 border-t border-theme">
               <div className="flex items-center gap-4">
-                <span className="text-[#F3F6FF] font-medium">
+                <span className="text-primary font-medium">
                   €{(rec.value / 1000000).toFixed(1)}M
                 </span>
                 <div className="flex items-center gap-1 text-[#22C55E] text-sm">
@@ -387,7 +387,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                     setSelectedRec(rec);
                     setShowDetailsModal(true);
                   }}
-                  className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                  className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
                 </button>
@@ -409,11 +409,11 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
 
       {filteredRecommendations.length === 0 && (
         <div className="text-center py-16">
-          <div className="w-20 h-20 bg-[#161F32] rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Filter className="w-10 h-10 text-[#A9B3D0]" />
+          <div className="w-20 h-20 bg-tertiary rounded-xl flex items-center justify-center mx-auto mb-4">
+            <Filter className="w-10 h-10 text-secondary" />
           </div>
-          <h3 className="text-[#F3F6FF] font-semibold mb-2">No recommendations match</h3>
-          <p className="text-[#A9B3D0] text-sm">Try adjusting your filters or update your preferences</p>
+          <h3 className="text-primary font-semibold mb-2">No recommendations match</h3>
+          <p className="text-secondary text-sm">Try adjusting your filters or update your preferences</p>
         </div>
       )}
 
@@ -424,8 +424,8 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
             <Zap className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="text-[#F3F6FF] font-semibold mb-2">How AI recommendations work</h3>
-            <p className="text-[#A9B3D0] text-sm leading-relaxed">
+            <h3 className="text-primary font-semibold mb-2">How AI recommendations work</h3>
+            <p className="text-secondary text-sm leading-relaxed">
               Our AI analyzes your profile, past applications, and current pipeline to find the most relevant EU funding opportunities. 
               Match scores consider: your municipality's focus areas, successful past applications, deadline compatibility, 
               and funding amount alignment with your typical projects.
@@ -433,15 +433,15 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
             <div className="flex items-center gap-4 mt-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-[#22C55E] rounded-full" />
-                <span className="text-[#A9B3D0] text-sm">90%+ Excellent match</span>
+                <span className="text-secondary text-sm">90%+ Excellent match</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-[#4F46E5] rounded-full" />
-                <span className="text-[#A9B3D0] text-sm">80-89% Good match</span>
+                <div className="w-3 h-3 bg-accent rounded-full" />
+                <span className="text-secondary text-sm">80-89% Good match</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-[#F59E0B] rounded-full" />
-                <span className="text-[#A9B3D0] text-sm">70-79% Fair match</span>
+                <span className="text-secondary text-sm">70-79% Fair match</span>
               </div>
             </div>
           </div>
@@ -451,16 +451,16 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
       {/* Details Modal */}
       {showDetailsModal && selectedRec && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <div className="bg-secondary border border-theme rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-[#273155]">
+            <div className="flex items-center justify-between p-6 border-b border-theme">
               <div>
-                <h2 className="text-xl font-semibold text-[#F3F6FF]">{selectedRec.title}</h2>
-                <p className="text-[#A9B3D0] text-sm">{selectedRec.program}</p>
+                <h2 className="text-xl font-semibold text-primary">{selectedRec.title}</h2>
+                <p className="text-secondary text-sm">{selectedRec.program}</p>
               </div>
               <button 
                 onClick={() => setShowDetailsModal(false)}
-                className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -472,16 +472,16 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               <div className="flex items-center gap-4">
                 <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
                   selectedRec.matchScore >= 90 ? 'bg-[#22C55E]/15' :
-                  selectedRec.matchScore >= 80 ? 'bg-[#4F46E5]/15' : 'bg-[#F59E0B]/15'
+                  selectedRec.matchScore >= 80 ? 'bg-accent/15' : 'bg-[#F59E0B]/15'
                 }`}>
                   <span className={`text-2xl font-bold ${
                     selectedRec.matchScore >= 90 ? 'text-[#22C55E]' :
-                    selectedRec.matchScore >= 80 ? 'text-[#4F46E5]' : 'text-[#F59E0B]'
+                    selectedRec.matchScore >= 80 ? 'text-accent' : 'text-[#F59E0B]'
                   }`}>{selectedRec.matchScore}%</span>
                 </div>
                 <div>
-                  <p className="text-[#F3F6FF] font-medium">Match Score</p>
-                  <p className="text-[#A9B3D0] text-sm">
+                  <p className="text-primary font-medium">Match Score</p>
+                  <p className="text-secondary text-sm">
                     {selectedRec.matchScore >= 90 ? 'Excellent match for your profile' :
                      selectedRec.matchScore >= 80 ? 'Good match for your needs' : 'Fair match, review carefully'}
                   </p>
@@ -490,44 +490,44 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
 
               {/* Key Details */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 bg-[#161F32] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#A9B3D0] text-sm mb-1">
+                <div className="p-4 bg-tertiary rounded-xl">
+                  <div className="flex items-center gap-2 text-secondary text-sm mb-1">
                     <Euro className="w-4 h-4" />
                     <span>Funding</span>
                   </div>
-                  <p className="text-[#F3F6FF] font-medium">€{(selectedRec.value / 1000000).toFixed(1)}M</p>
+                  <p className="text-primary font-medium">€{(selectedRec.value / 1000000).toFixed(1)}M</p>
                 </div>
-                <div className="p-4 bg-[#161F32] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#A9B3D0] text-sm mb-1">
+                <div className="p-4 bg-tertiary rounded-xl">
+                  <div className="flex items-center gap-2 text-secondary text-sm mb-1">
                     <Calendar className="w-4 h-4" />
                     <span>Deadline</span>
                   </div>
-                  <p className="text-[#F3F6FF] font-medium">{selectedRec.deadline}</p>
+                  <p className="text-primary font-medium">{selectedRec.deadline}</p>
                 </div>
-                <div className="p-4 bg-[#161F32] rounded-xl">
-                  <div className="flex items-center gap-2 text-[#A9B3D0] text-sm mb-1">
+                <div className="p-4 bg-tertiary rounded-xl">
+                  <div className="flex items-center gap-2 text-secondary text-sm mb-1">
                     <Users className="w-4 h-4" />
                     <span>Eligible</span>
                   </div>
-                  <p className="text-[#F3F6FF] font-medium">Municipalities</p>
+                  <p className="text-primary font-medium">Municipalities</p>
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <h3 className="text-[#F3F6FF] font-semibold mb-2 flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#4F46E5]" />
+                <h3 className="text-primary font-semibold mb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-accent" />
                   Description
                 </h3>
-                <p className="text-[#A9B3D0] text-sm leading-relaxed">{selectedRec.description}</p>
+                <p className="text-secondary text-sm leading-relaxed">{selectedRec.description}</p>
               </div>
 
               {/* Categories */}
               <div>
-                <h3 className="text-[#F3F6FF] font-semibold mb-2">Categories</h3>
+                <h3 className="text-primary font-semibold mb-2">Categories</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedRec.categories.map((cat, i) => (
-                    <span key={i} className="px-3 py-1 bg-[#4F46E5]/15 text-[#4F46E5] text-sm rounded-full">
+                    <span key={i} className="px-3 py-1 bg-accent/15 text-accent text-sm rounded-full">
                       {cat}
                     </span>
                   ))}
@@ -535,7 +535,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-[#273155]">
+              <div className="flex gap-3 pt-4 border-t border-theme">
                 <button 
                   onClick={() => {
                     toast.success('Added to pipeline');
@@ -548,7 +548,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                 </button>
                 <button 
                   onClick={() => toast.info('Opening official program page...')}
-                  className="flex items-center gap-2 px-4 py-3 bg-[#161F32] hover:bg-[#1E293B] rounded-xl text-[#F3F6FF] transition-colors"
+                  className="flex items-center gap-2 px-4 py-3 bg-tertiary hover:bg-surface-hover rounded-xl text-primary transition-colors"
                 >
                   <Globe className="w-4 h-4" />
                   Official Page

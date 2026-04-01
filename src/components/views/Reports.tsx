@@ -167,8 +167,8 @@ export function Reports() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#F3F6FF]">Reports & exports</h1>
-          <p className="text-[#A9B3D0] mt-1">Generate submission-ready documents and track history.</p>
+          <h1 className="text-2xl font-semibold text-primary">Reports & exports</h1>
+          <p className="text-secondary mt-1">Generate submission-ready documents and track history.</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -205,7 +205,7 @@ export function Reports() {
                 <div className="flex gap-2">
                   <button 
                     onClick={() => handlePreview(card.format)}
-                    className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                    className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                     title="Preview"
                   >
                     <Eye className="w-4 h-4" />
@@ -216,7 +216,7 @@ export function Reports() {
                     className={`p-2 rounded-lg transition-all ${
                       isExported 
                         ? 'bg-[#22C55E]/20 text-[#22C55E]' 
-                        : 'text-[#A9B3D0] hover:text-[#4F46E5] hover:bg-[#4F46E5]/10'
+                        : 'text-secondary hover:text-accent hover:bg-accent/10'
                     }`}
                   >
                     {isExporting === card.id ? (
@@ -229,8 +229,8 @@ export function Reports() {
                   </button>
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-[#F3F6FF] mb-1">{card.title}</h3>
-              <p className="text-[#A9B3D0] text-sm">{card.description}</p>
+              <h3 className="text-lg font-semibold text-primary mb-1">{card.title}</h3>
+              <p className="text-secondary text-sm">{card.description}</p>
               
               {isExported && (
                 <p className="text-[#22C55E] text-sm mt-3 flex items-center gap-2">
@@ -248,8 +248,8 @@ export function Reports() {
         {/* Program Distribution */}
         <div className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#F3F6FF]">Grants by Program</h2>
-            <PieChart className="w-5 h-5 text-[#A9B3D0]" />
+            <h2 className="text-lg font-semibold text-primary">Grants by Program</h2>
+            <PieChart className="w-5 h-5 text-secondary" />
           </div>
           <div className="space-y-3">
             {programData.map((program) => (
@@ -258,9 +258,9 @@ export function Reports() {
                   className="w-3 h-3 rounded-full" 
                   style={{ backgroundColor: program.color }}
                 />
-                <span className="text-[#F3F6FF] text-sm flex-1">{program.name}</span>
+                <span className="text-primary text-sm flex-1">{program.name}</span>
                 <div className="flex items-center gap-3">
-                  <div className="w-32 h-2 bg-[#161F32] rounded-full overflow-hidden">
+                  <div className="w-32 h-2 bg-tertiary rounded-full overflow-hidden">
                     <div 
                       className="h-full rounded-full"
                       style={{ 
@@ -269,7 +269,7 @@ export function Reports() {
                       }}
                     />
                   </div>
-                  <span className="text-[#A9B3D0] text-sm w-6">{program.value}</span>
+                  <span className="text-secondary text-sm w-6">{program.value}</span>
                 </div>
               </div>
             ))}
@@ -279,15 +279,15 @@ export function Reports() {
         {/* Monthly Activity */}
         <div className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#F3F6FF]">Monthly Activity</h2>
-            <BarChart3 className="w-5 h-5 text-[#A9B3D0]" />
+            <h2 className="text-lg font-semibold text-primary">Monthly Activity</h2>
+            <BarChart3 className="w-5 h-5 text-secondary" />
           </div>
           <div className="flex items-end justify-between h-32 gap-4">
             {monthlyData.map((month) => (
               <div key={month.month} className="flex-1 flex flex-col items-center gap-2">
                 <div className="w-full flex gap-1 items-end h-24">
                   <div 
-                    className="flex-1 bg-[#4F46E5] rounded-t transition-all duration-500"
+                    className="flex-1 bg-accent rounded-t transition-all duration-500"
                     style={{ height: `${(month.submitted / 3) * 100}%` }}
                     title={`${month.submitted} submitted`}
                   />
@@ -297,18 +297,18 @@ export function Reports() {
                     title={`${month.won} won`}
                   />
                 </div>
-                <span className="text-[#A9B3D0] text-xs">{month.month}</span>
+                <span className="text-secondary text-xs">{month.month}</span>
               </div>
             ))}
           </div>
           <div className="flex items-center justify-center gap-4 mt-3">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-[#4F46E5] rounded" />
-              <span className="text-[#A9B3D0] text-xs">Submitted</span>
+              <div className="w-3 h-3 bg-accent rounded" />
+              <span className="text-secondary text-xs">Submitted</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-[#22C55E] rounded" />
-              <span className="text-[#A9B3D0] text-xs">Won</span>
+              <span className="text-secondary text-xs">Won</span>
             </div>
           </div>
         </div>
@@ -317,14 +317,14 @@ export function Reports() {
       {/* Submission History */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#F3F6FF]">Submission history</h2>
+          <h2 className="text-lg font-semibold text-primary">Submission history</h2>
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A9B3D0]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
               <input
                 type="text"
                 placeholder="Search submissions..."
-                className="w-56 bg-[#161F32] border border-[#273155] rounded-xl pl-9 pr-4 py-2 text-sm text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                className="w-56 bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2 text-sm text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
               />
             </div>
             <button className="btn-secondary flex items-center gap-2 text-sm">
@@ -342,12 +342,12 @@ export function Reports() {
         <div ref={tableRef} className="card-dark overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-[#161F32] border-b border-[#273155]">
-                <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Grant</th>
-                <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Submitted</th>
-                <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Format</th>
-                <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Status</th>
-                <th className="text-right text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-5 py-4">Actions</th>
+              <tr className="bg-tertiary border-b border-theme">
+                <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Grant</th>
+                <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Submitted</th>
+                <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Format</th>
+                <th className="text-left text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Status</th>
+                <th className="text-right text-secondary text-xs font-medium uppercase tracking-wider px-5 py-4">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -356,18 +356,18 @@ export function Reports() {
                 return (
                   <tr 
                     key={submission.id}
-                    className={`history-row border-b border-[#273155]/50 table-row-hover ${index % 2 === 1 ? 'bg-[#161F32]/30' : ''}`}
+                    className={`history-row border-b border-theme/50 table-row-hover ${index % 2 === 1 ? 'bg-tertiary/30' : ''}`}
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center">
-                          <FileText className="w-5 h-5 text-[#4F46E5]" />
+                        <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-accent" />
                         </div>
-                        <span className="text-[#F3F6FF] font-medium">{submission.grantName}</span>
+                        <span className="text-primary font-medium">{submission.grantName}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-[#F3F6FF] mono">{submission.submittedAt}</span>
+                      <span className="text-primary mono">{submission.submittedAt}</span>
                     </td>
                     <td className="px-5 py-4">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
@@ -382,7 +382,7 @@ export function Reports() {
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                         status === 'won' ? 'bg-[#22C55E]/15 text-[#22C55E]' :
                         status === 'submitted' ? 'bg-[#F59E0B]/15 text-[#F59E0B]' :
-                        'bg-[#4F46E5]/15 text-[#4F46E5]'
+                        'bg-accent/15 text-accent'
                       }`}>
                         {status === 'won' ? 'Awarded' : status === 'submitted' ? 'Under review' : 'Submitted'}
                       </span>
@@ -391,13 +391,13 @@ export function Reports() {
                       <div className="flex items-center justify-end gap-2">
                         <button 
                           onClick={() => toast.info(`Opening ${submission.grantName}...`)}
-                          className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                          className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => toast.success(`Downloading ${submission.grantName}...`)}
-                          className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                          className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Download className="w-4 h-4" />
                         </button>
@@ -419,19 +419,19 @@ export function Reports() {
               <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Total submitted</p>
-              <p className="text-[#F3F6FF] text-xl font-semibold">{submissions.length}</p>
+              <p className="text-secondary text-sm">Total submitted</p>
+              <p className="text-primary text-xl font-semibold">{submissions.length}</p>
             </div>
           </div>
         </div>
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-[#4F46E5]" />
+            <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center">
+              <Clock className="w-5 h-5 text-accent" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Under review</p>
-              <p className="text-[#F3F6FF] text-xl font-semibold">{totalSubmitted}</p>
+              <p className="text-secondary text-sm">Under review</p>
+              <p className="text-primary text-xl font-semibold">{totalSubmitted}</p>
             </div>
           </div>
         </div>
@@ -441,8 +441,8 @@ export function Reports() {
               <TrendingUp className="w-5 h-5 text-[#F59E0B]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Success rate</p>
-              <p className="text-[#F3F6FF] text-xl font-semibold">{Math.round((totalWon / (totalWon + totalSubmitted)) * 100) || 0}%</p>
+              <p className="text-secondary text-sm">Success rate</p>
+              <p className="text-primary text-xl font-semibold">{Math.round((totalWon / (totalWon + totalSubmitted)) * 100) || 0}%</p>
             </div>
           </div>
         </div>
@@ -452,8 +452,8 @@ export function Reports() {
               <FileText className="w-5 h-5 text-[#8B5CF6]" />
             </div>
             <div>
-              <p className="text-[#A9B3D0] text-sm">Total won value</p>
-              <p className="text-[#F3F6FF] text-xl font-semibold">€{(totalValue / 1000000).toFixed(1)}M</p>
+              <p className="text-secondary text-sm">Total won value</p>
+              <p className="text-primary text-xl font-semibold">€{(totalValue / 1000000).toFixed(1)}M</p>
             </div>
           </div>
         </div>
@@ -462,15 +462,15 @@ export function Reports() {
       {/* Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl w-[800px] max-w-[90vw] max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-5 border-b border-[#273155]">
+          <div className="bg-secondary border border-theme rounded-2xl w-[800px] max-w-[90vw] max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-theme">
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-[#4F46E5]" />
-                <h2 className="text-lg font-semibold text-[#F3F6FF]">Preview: {previewFormat} Export</h2>
+                <FileText className="w-5 h-5 text-accent" />
+                <h2 className="text-lg font-semibold text-primary">Preview: {previewFormat} Export</h2>
               </div>
               <button 
                 onClick={() => setShowPreview(false)}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+                className="text-secondary hover:text-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -515,7 +515,7 @@ export function Reports() {
                 </table>
               </div>
             </div>
-            <div className="flex items-center justify-end gap-3 p-5 border-t border-[#273155]">
+            <div className="flex items-center justify-end gap-3 p-5 border-t border-theme">
               <button 
                 onClick={() => setShowPreview(false)}
                 className="btn-secondary"
@@ -540,12 +540,12 @@ export function Reports() {
       {/* Share Modal */}
       {showShareModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[450px]">
+          <div className="bg-secondary border border-theme rounded-2xl p-6 w-[450px]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#F3F6FF]">Share Report</h2>
+              <h2 className="text-xl font-semibold text-primary">Share Report</h2>
               <button 
                 onClick={() => setShowShareModal(false)}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+                className="text-secondary hover:text-primary"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -553,7 +553,7 @@ export function Reports() {
             <div className="space-y-6">
               {/* Share by Email */}
               <div>
-                <label className="text-[#A9B3D0] text-sm mb-2 block flex items-center gap-2">
+                <label className="text-secondary text-sm mb-2 block flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   Share by Email
                 </label>
@@ -563,7 +563,7 @@ export function Reports() {
                     value={shareEmail}
                     onChange={(e) => setShareEmail(e.target.value)}
                     placeholder="colleague@example.com"
-                    className="flex-1 bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                    className="flex-1 bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                   />
                   <button
                     onClick={handleShareByEmail}
@@ -576,8 +576,8 @@ export function Reports() {
               </div>
 
               {/* Share Link */}
-              <div className="pt-4 border-t border-[#273155]">
-                <label className="text-[#A9B3D0] text-sm mb-2 block flex items-center gap-2">
+              <div className="pt-4 border-t border-theme">
+                <label className="text-secondary text-sm mb-2 block flex items-center gap-2">
                   <Link className="w-4 h-4" />
                   Share Link
                 </label>

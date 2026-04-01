@@ -448,9 +448,18 @@ I found 3 areas to improve:
 
   // Editor toolbar actions
   const execCommand = (command: string, value: string | undefined = undefined) => {
+    // Focus editor first
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+    
+    // Execute command
     document.execCommand(command, false, value);
+    
+    // Update content state
     if (editorRef.current) {
       setEditorContent(editorRef.current.innerHTML);
+      setIsDirty(true);
     }
   };
 
@@ -957,7 +966,26 @@ I found 3 areas to improve:
                           {version.timestamp.toLocaleString()} by {version.author}
                         </p>
                       </div>
-                      <button className="text-accent text-sm hover:underline">
+                      <button 
+                        onClick={() => {
+                          if (confirm('Restore this version? Current changes will be lost.')) {
+                            // Restore content from this version
+                            Object.entries(version.content).forEach(([sectionId, content]) => {
+                              if (sectionId === activeSectionId) {
+                                setEditorContent(content);
+                              }
+                            });
+                            setSections(prev => prev.map(s => ({
+                              ...s,
+                              content: version.content[s.id] || s.content,
+                              wordCount: (version.content[s.id] || '').trim().split(/\s+/).filter((w: string) => w.length > 0).length
+                            })));
+                            setShowVersions(false);
+                            toast.success(`Restored version from ${version.timestamp.toLocaleString()}`);
+                          }
+                        }}
+                        className="text-accent text-sm hover:underline"
+                      >
                         Restore
                       </button>
                     </div>

@@ -54,31 +54,31 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#111827] border border-[#273155] rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="bg-secondary border border-theme rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#273155]">
+        <div className="flex items-center justify-between p-6 border-b border-theme">
           <div>
-            <h2 className="text-xl font-semibold text-[#F3F6FF]">Help Center</h2>
-            <p className="text-[#A9B3D0] text-sm">Find answers and get support</p>
+            <h2 className="text-xl font-semibold text-primary">Help Center</h2>
+            <p className="text-secondary text-sm">Find answers and get support</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+            className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="p-6 border-b border-[#273155]">
+        <div className="p-6 border-b border-theme">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#A9B3D0]" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for help..."
-              className="w-full bg-[#161F32] border border-[#273155] rounded-xl pl-12 pr-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+              className="w-full bg-tertiary border border-theme rounded-xl pl-12 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
             />
           </div>
         </div>
@@ -87,22 +87,22 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Quick Guides */}
           <div>
-            <h3 className="text-[#F3F6FF] font-semibold mb-4">Quick Guides</h3>
+            <h3 className="text-primary font-semibold mb-4">Quick Guides</h3>
             <div className="grid grid-cols-2 gap-3">
               {guides.map((guide, i) => (
                 <button
                   key={i}
                   onClick={() => toast.info(`${guide.title} - Opening in new tab...`)}
-                  className="flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors text-left"
+                  className="flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors text-left"
                 >
-                  <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center">
-                    <guide.icon className="w-5 h-5 text-[#4F46E5]" />
+                  <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center">
+                    <guide.icon className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[#F3F6FF] font-medium text-sm">{guide.title}</p>
-                    <p className="text-[#A9B3D0] text-xs">{guide.description}</p>
+                    <p className="text-primary font-medium text-sm">{guide.title}</p>
+                    <p className="text-secondary text-xs">{guide.description}</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 text-[#A9B3D0]" />
+                  <ExternalLink className="w-4 h-4 text-secondary" />
                 </button>
               ))}
             </div>
@@ -110,48 +110,48 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
 
           {/* FAQs */}
           <div>
-            <h3 className="text-[#F3F6FF] font-semibold mb-4">Frequently Asked Questions</h3>
+            <h3 className="text-primary font-semibold mb-4">Frequently Asked Questions</h3>
             <div className="space-y-2">
               {filteredFaqs.map((faq, i) => (
                 <div 
                   key={i}
-                  className="bg-[#161F32] rounded-xl overflow-hidden"
+                  className="bg-tertiary rounded-xl overflow-hidden"
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                    className="w-full flex items-center justify-between p-4 text-left hover:bg-[#1E293B] transition-colors"
+                    className="w-full flex items-center justify-between p-4 text-left hover:bg-surface-hover transition-colors"
                   >
-                    <span className="text-[#F3F6FF] font-medium text-sm">{faq.question}</span>
-                    <ChevronRight className={`w-4 h-4 text-[#A9B3D0] transition-transform ${expandedFaq === i ? 'rotate-90' : ''}`} />
+                    <span className="text-primary font-medium text-sm">{faq.question}</span>
+                    <ChevronRight className={`w-4 h-4 text-secondary transition-transform ${expandedFaq === i ? 'rotate-90' : ''}`} />
                   </button>
                   {expandedFaq === i && (
                     <div className="px-4 pb-4">
-                      <p className="text-[#A9B3D0] text-sm">{faq.answer}</p>
+                      <p className="text-secondary text-sm">{faq.answer}</p>
                     </div>
                   )}
                 </div>
               ))}
               {filteredFaqs.length === 0 && (
-                <p className="text-[#A9B3D0] text-center py-4">No results found. Try a different search.</p>
+                <p className="text-secondary text-center py-4">No results found. Try a different search.</p>
               )}
             </div>
           </div>
 
           {/* Contact Support */}
-          <div className="p-4 bg-[#4F46E5]/10 border border-[#4F46E5]/30 rounded-xl">
-            <h3 className="text-[#F3F6FF] font-semibold mb-2">Need more help?</h3>
-            <p className="text-[#A9B3D0] text-sm mb-4">Our support team is here to assist you.</p>
+          <div className="p-4 bg-accent/10 border border-[#4F46E5]/30 rounded-xl">
+            <h3 className="text-primary font-semibold mb-2">Need more help?</h3>
+            <p className="text-secondary text-sm mb-4">Our support team is here to assist you.</p>
             <div className="flex gap-3">
               <button 
                 onClick={() => toast.success('Support email copied: support@eugrantmanager.eu')}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4F46E5] hover:bg-[#4338CA] rounded-lg text-white text-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-[#4338CA] rounded-lg text-white text-sm transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 Email Support
               </button>
               <button 
                 onClick={() => toast.info('Phone support: +48 12 345 6789')}
-                className="flex items-center gap-2 px-4 py-2 bg-[#161F32] hover:bg-[#1E293B] rounded-lg text-[#F3F6FF] text-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-tertiary hover:bg-surface-hover rounded-lg text-primary text-sm transition-colors"
               >
                 <Phone className="w-4 h-4" />
                 Call Us

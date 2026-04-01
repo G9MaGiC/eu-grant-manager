@@ -152,21 +152,21 @@ export function Calendar({ onViewChange }: CalendarProps) {
         <div
           key={day}
           onClick={() => setSelectedDate(date)}
-          className={`h-28 p-2 border border-[#273155]/50 cursor-pointer transition-colors ${
-            isSelected ? 'bg-[#4F46E5]/10 border-[#4F46E5]' :
-            isToday ? 'bg-[#4F46E5]/5 border-[#4F46E5]/50' :
-            isWeekend ? 'bg-[#161F32]/30' : 'bg-[#161F32]/10 hover:bg-[#161F32]/50'
+          className={`h-28 p-2 border border-theme/50 cursor-pointer transition-colors ${
+            isSelected ? 'bg-accent/10 border-[#4F46E5]' :
+            isToday ? 'bg-accent/5 border-[#4F46E5]/50' :
+            isWeekend ? 'bg-tertiary/30' : 'bg-tertiary/10 hover:bg-tertiary/50'
           }`}
         >
           <div className="flex items-center justify-between mb-1">
             <span className={`text-sm font-medium ${
-              isToday ? 'text-[#4F46E5]' : 
-              isWeekend ? 'text-[#A9B3D0]/60' : 'text-[#F3F6FF]'
+              isToday ? 'text-accent' : 
+              isWeekend ? 'text-secondary/60' : 'text-primary'
             }`}>
               {day}
             </span>
             {isToday && (
-              <span className="px-1.5 py-0.5 bg-[#4F46E5] text-white text-[10px] rounded">Today</span>
+              <span className="px-1.5 py-0.5 bg-accent text-white text-[10px] rounded">Today</span>
             )}
           </div>
           <div className="space-y-1">
@@ -180,7 +180,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 className={`px-2 py-1 rounded text-xs truncate cursor-pointer ${
                   grant.deadline === dateStr
                     ? 'bg-[#EF4444]/20 text-[#EF4444] hover:bg-[#EF4444]/30'
-                    : 'bg-[#4F46E5]/20 text-[#4F46E5] hover:bg-[#4F46E5]/30'
+                    : 'bg-accent/20 text-accent hover:bg-accent/30'
                 }`}
               >
                 {grant.deadline === dateStr ? '⏰ ' : '• '}
@@ -188,7 +188,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
               </div>
             ))}
             {grantEvents.length > 2 && (
-              <div className="px-2 py-1 text-[#A9B3D0] text-xs">
+              <div className="px-2 py-1 text-secondary text-xs">
                 +{grantEvents.length - 2} more
               </div>
             )}
@@ -210,8 +210,8 @@ export function Calendar({ onViewChange }: CalendarProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-[#F3F6FF]">Calendar</h1>
-          <p className="text-[#A9B3D0] mt-1">Track deadlines and important dates</p>
+          <h1 className="text-2xl font-semibold text-primary">Calendar</h1>
+          <p className="text-secondary mt-1">Track deadlines and important dates</p>
         </div>
         <div className="flex items-center gap-3">
           <button 
@@ -238,19 +238,19 @@ export function Calendar({ onViewChange }: CalendarProps) {
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold text-[#F3F6FF]">
+                <h2 className="text-xl font-semibold text-primary">
                   {months[currentDate.getMonth()]} {currentDate.getFullYear()}
                 </h2>
                 <div className="flex items-center gap-1">
                   <button 
                     onClick={() => navigateMonth('prev')}
-                    className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                    className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button 
                     onClick={() => navigateMonth('next')}
-                    className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                    className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -259,15 +259,15 @@ export function Calendar({ onViewChange }: CalendarProps) {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={goToToday}
-                  className="px-4 py-2 text-[#4F46E5] hover:bg-[#4F46E5]/10 rounded-lg transition-colors text-sm font-medium"
+                  className="px-4 py-2 text-accent hover:bg-accent/10 rounded-lg transition-colors text-sm font-medium"
                 >
                   Today
                 </button>
-                <div className="flex bg-[#161F32] rounded-lg p-1">
+                <div className="flex bg-tertiary rounded-lg p-1">
                   <button 
                     onClick={() => setView('month')}
                     className={`px-3 py-1.5 rounded text-sm transition-colors ${
-                      view === 'month' ? 'bg-[#4F46E5] text-white' : 'text-[#A9B3D0] hover:text-[#F3F6FF]'
+                      view === 'month' ? 'bg-accent text-white' : 'text-secondary hover:text-primary'
                     }`}
                   >
                     Month
@@ -275,7 +275,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   <button 
                     onClick={() => setView('week')}
                     className={`px-3 py-1.5 rounded text-sm transition-colors ${
-                      view === 'week' ? 'bg-[#4F46E5] text-white' : 'text-[#A9B3D0] hover:text-[#F3F6FF]'
+                      view === 'week' ? 'bg-accent text-white' : 'text-secondary hover:text-primary'
                     }`}
                   >
                     Week
@@ -287,7 +287,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
             {/* Days of Week */}
             <div className="grid grid-cols-7 gap-px mb-2">
               {daysOfWeek.map((day) => (
-                <div key={day} className="py-2 text-center text-[#A9B3D0] text-sm font-medium">
+                <div key={day} className="py-2 text-center text-secondary text-sm font-medium">
                   {day}
                 </div>
               ))}
@@ -299,18 +299,18 @@ export function Calendar({ onViewChange }: CalendarProps) {
             </div>
 
             {/* Legend */}
-            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-[#273155]">
+            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-theme">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-[#EF4444]/30 rounded" />
-                <span className="text-[#A9B3D0] text-sm">Deadline</span>
+                <span className="text-secondary text-sm">Deadline</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-[#4F46E5]/30 rounded" />
-                <span className="text-[#A9B3D0] text-sm">Milestone</span>
+                <div className="w-3 h-3 bg-accent/30 rounded" />
+                <span className="text-secondary text-sm">Milestone</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-[#22C55E]/30 rounded" />
-                <span className="text-[#A9B3D0] text-sm">Meeting</span>
+                <span className="text-secondary text-sm">Meeting</span>
               </div>
             </div>
           </div>
@@ -321,7 +321,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
           {/* Selected Date Events */}
           {selectedDate && (
             <div className="card-dark p-5">
-              <h3 className="text-[#F3F6FF] font-semibold mb-4">
+              <h3 className="text-primary font-semibold mb-4">
                 {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </h3>
               <div className="space-y-2">
@@ -330,20 +330,20 @@ export function Calendar({ onViewChange }: CalendarProps) {
                     <div 
                       key={i}
                       onClick={() => onViewChange('grant-detail', event.id)}
-                      className="p-3 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors cursor-pointer"
+                      className="p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Clock className="w-4 h-4 text-[#4F46E5]" />
-                        <span className="text-[#A9B3D0] text-xs">
+                        <Clock className="w-4 h-4 text-accent" />
+                        <span className="text-secondary text-xs">
                           {event.deadline === selectedDate.toISOString().split('T')[0] ? 'Deadline' : 'Milestone'}
                         </span>
                       </div>
-                      <p className="text-[#F3F6FF] text-sm font-medium">{event.name}</p>
-                      <p className="text-[#A9B3D0] text-xs">{event.program} Program</p>
+                      <p className="text-primary text-sm font-medium">{event.name}</p>
+                      <p className="text-secondary text-xs">{event.program} Program</p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-[#A9B3D0] text-sm text-center py-4">No events for this date</p>
+                  <p className="text-secondary text-sm text-center py-4">No events for this date</p>
                 )}
               </div>
             </div>
@@ -352,7 +352,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
           {/* Upcoming Deadlines */}
           <div className="card-dark p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#F3F6FF] font-semibold">Upcoming Deadlines</h3>
+              <h3 className="text-primary font-semibold">Upcoming Deadlines</h3>
               <span className="px-2 py-0.5 bg-[#EF4444]/15 text-[#EF4444] text-xs rounded-full">
                 {upcomingDeadlines.length}
               </span>
@@ -364,24 +364,24 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   <div 
                     key={i}
                     onClick={() => onViewChange('grant-detail', grant.id)}
-                    className="flex items-center gap-3 p-3 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors cursor-pointer"
+                    className="flex items-center gap-3 p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       daysLeft <= 3 ? 'bg-[#EF4444]/15' : 
-                      daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-[#4F46E5]/15'
+                      daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-accent/15'
                     }`}>
                       <CalendarIcon className={`w-5 h-5 ${
                         daysLeft <= 3 ? 'text-[#EF4444]' : 
-                        daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-[#4F46E5]'
+                        daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-accent'
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[#F3F6FF] text-sm font-medium truncate">{grant.name}</p>
-                      <p className="text-[#A9B3D0] text-xs">{grant.deadline}</p>
+                      <p className="text-primary text-sm font-medium truncate">{grant.name}</p>
+                      <p className="text-secondary text-xs">{grant.deadline}</p>
                     </div>
                     <span className={`text-xs ${
                       daysLeft <= 3 ? 'text-[#EF4444]' : 
-                      daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-[#A9B3D0]'
+                      daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-secondary'
                     }`}>
                       {daysLeft}d
                     </span>
@@ -393,11 +393,11 @@ export function Calendar({ onViewChange }: CalendarProps) {
 
           {/* Quick Stats */}
           <div className="card-dark p-5">
-            <h3 className="text-[#F3F6FF] font-semibold mb-4">This Month</h3>
+            <h3 className="text-primary font-semibold mb-4">This Month</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[#A9B3D0] text-sm">Deadlines</span>
-                <span className="text-[#F3F6FF] font-medium">
+                <span className="text-secondary text-sm">Deadlines</span>
+                <span className="text-primary font-medium">
                   {grants.filter(g => {
                     const d = new Date(g.deadline + 'T00:00:00'); // Parse as local time
                     return d.getMonth() === currentDate.getMonth() && d.getFullYear() === currentDate.getFullYear();
@@ -405,12 +405,12 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#A9B3D0] text-sm">Milestones</span>
-                <span className="text-[#F3F6FF] font-medium">8</span>
+                <span className="text-secondary text-sm">Milestones</span>
+                <span className="text-primary font-medium">8</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#A9B3D0] text-sm">Meetings</span>
-                <span className="text-[#F3F6FF] font-medium">4</span>
+                <span className="text-secondary text-sm">Meetings</span>
+                <span className="text-primary font-medium">4</span>
               </div>
             </div>
           </div>
@@ -420,42 +420,42 @@ export function Calendar({ onViewChange }: CalendarProps) {
       {/* Add Event Modal */}
       {showAddEventModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[450px]">
+          <div className="bg-secondary border border-theme rounded-2xl p-6 w-[450px]">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#F3F6FF]">Add Event</h2>
+              <h2 className="text-xl font-semibold text-primary">Add Event</h2>
               <button 
                 onClick={() => setShowAddEventModal(false)}
-                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+                className="text-secondary hover:text-primary"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-[#A9B3D0] text-sm mb-2">Event Title</label>
+                <label className="block text-secondary text-sm mb-2">Event Title</label>
                 <input
                   type="text"
                   value={newEventTitle}
                   onChange={(e) => setNewEventTitle(e.target.value)}
                   placeholder="e.g., Team Meeting"
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 />
               </div>
               <div>
-                <label className="block text-[#A9B3D0] text-sm mb-2">Date</label>
+                <label className="block text-secondary text-sm mb-2">Date</label>
                 <input
                   type="date"
                   value={newEventDate}
                   onChange={(e) => setNewEventDate(e.target.value)}
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 />
               </div>
               <div>
-                <label className="block text-[#A9B3D0] text-sm mb-2">Type</label>
+                <label className="block text-secondary text-sm mb-2">Type</label>
                 <select
                   value={newEventType}
                   onChange={(e) => setNewEventType(e.target.value as 'deadline' | 'meeting' | 'reminder')}
-                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
                 >
                   <option value="meeting">Meeting</option>
                   <option value="deadline">Deadline</option>
