@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-// import { gsap } from 'gsap';
 import { 
   Bold, Italic, Underline, Strikethrough,
   AlignLeft, AlignCenter, AlignRight,
   List, ListOrdered,
-  Link, Table, Quote,
+  Link, Quote,
   Save, Download, FileText, Eye,
   Sparkles, Send, Check, X,
   Search,
   History, MessageSquare, Zap,
   Target,
-  FileDown, FileUp
+  FileDown, FileUp,
+  Undo,
+  Redo,
+  ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -33,7 +35,6 @@ interface Comment {
   author: string;
   timestamp: Date;
   resolved: boolean;
-  selection?: { start: number; end: number };
 }
 
 interface Version {
@@ -50,7 +51,6 @@ interface AIMessage {
   content: string;
   actions?: string[];
   suggestion?: string;
-  sectionId?: string;
 }
 
 interface Template {
@@ -86,6 +86,57 @@ Primary Objectives:
 1. Reduce energy consumption by 40% within 24 months
 2. Decrease CO₂ emissions by 1,200 tonnes annually
 3. Improve indoor air quality and thermal comfort`,
+      s3: `IMPLEMENTATION PLAN
+
+Phase 1: Preparation (Months 1-3)
+• Finalize technical designs and specifications
+• Obtain necessary permits and approvals
+• Launch procurement processes
+
+Phase 2: Execution (Months 4-18)
+• Building envelope improvements
+• HVAC system installations
+• Smart metering deployment`,
+      s4: `BUDGET AND CO-FINANCING
+
+Total Project Budget: €1,200,000
+
+COST BREAKDOWN:
+├─ Building envelope improvements: €480,000 (40%)
+├─ HVAC systems and equipment: €420,000 (35%)
+├─ Smart metering & BMS: €180,000 (15%)
+├─ Project management: €72,000 (6%)
+└─ Contingency (5%): €48,000 (4%)`,
+      s5: `RISK MANAGEMENT AND COMPLIANCE
+
+IDENTIFIED RISKS:
+
+1. Construction Delays (Medium Probability)
+   Mitigation: Buffer time in schedule, pre-qualified contractors
+
+2. Cost Overruns (Medium Probability)
+   Mitigation: Fixed-price contracts, 5% budget contingency
+
+COMPLIANCE FRAMEWORK:
+✓ EU Energy Efficiency Directive compliance
+✓ National building codes and standards
+✓ Public procurement regulations adherence`,
+      s6: `ANNEXES
+
+Annex A: Technical Specifications
+• Building survey reports
+• Energy audit findings
+• Technical drawings and plans
+
+Annex B: Financial Documents
+• Detailed budget spreadsheet
+• Co-financing commitment letters
+• Cash flow projections
+
+Annex C: Legal and Administrative
+• Municipality resolution authorizing application
+• Environmental permits
+• Building permits`
     }
   },
   {
@@ -94,7 +145,9 @@ Primary Objectives:
     description: 'Template for transport infrastructure projects under CEF',
     category: 'CEF',
     preview: 'Regional transport infrastructure improvements...',
-    sections: {}
+    sections: {
+      s1: 'PROJECT SUMMARY\n\nThis project aims to enhance regional transport infrastructure...',
+    }
   },
   {
     id: 'horizon-innovation',
@@ -182,6 +235,7 @@ export function ApplicationBuilder() {
   const [activeSectionId, setActiveSectionId] = useState('s1');
   const [editorContent, setEditorContent] = useState('');
   const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // UI State
   const [showTemplates, setShowTemplates] = useState(false);
@@ -203,22 +257,25 @@ export function ApplicationBuilder() {
   // Find/Replace State
   const [findText, setFindText] = useState('');
   const [replaceText, setReplaceText] = useState('');
-  const [findMatches, setFindMatches] = useState(0);
+  const [currentMatch, setCurrentMatch] = useState(0);
   
   // Comments
   const [newComment, setNewComment] = useState('');
   
+  // History for undo/redo
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  
   // Refs
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize
   useEffect(() => {
     const welcomeMessage: AIMessage = {
       id: 'welcome',
       type: 'ai',
-      content: `👋 Welcome to the enhanced Application Builder!
+      content: `👋 Welcome to the Application Builder!
 
 I can help you:
 • Write and edit grant sections
@@ -230,29 +287,35 @@ Start by selecting a template or begin writing.`,
       actions: ['Browse Templates', 'Writing Tips', 'Compliance Check']
     };
     setAiMessages([welcomeMessage]);
-    
-    // Load initial section content
+  }, []);
+
+  // Load initial section
+  useEffect(() => {
     const initialSection = sections.find(s => s.id === 's1');
     if (initialSection) {
       setEditorContent(initialSection.content);
+      // Initialize history
+      setHistory([initialSection.content]);
+      setHistoryIndex(0);
     }
   }, []);
 
   // Auto-save
   useEffect(() => {
-    if (isDirty) {
+    if (isDirty && !isSaving) {
       autoSaveRef.current = setTimeout(() => {
         handleSave();
-      }, 3000);
+      }, 5000);
     }
     return () => {
       if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
     };
-  }, [isDirty, editorContent]);
+  }, [isDirty, editorContent, isSaving]);
 
-  // Update section content
-  const updateSection = useCallback((sectionId: string, content: string) => {
-    const wordCount = content.trim().split(/\s+/).filter(w => w.length > 0).length;
+  // Update section stats
+  const updateSectionStats = useCallback((sectionId: string, content: string) => {
+    const plainText = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const wordCount = plainText ? plainText.split(/\s+/).length : 0;
     
     setSections(prev => prev.map(s => {
       if (s.id === sectionId) {
@@ -266,53 +329,125 @@ Start by selecting a template or begin writing.`,
       }
       return s;
     }));
-    setIsDirty(true);
   }, []);
+
+  // Handle content change
+  const handleContentChange = (newContent: string) => {
+    setEditorContent(newContent);
+    setIsDirty(true);
+    updateSectionStats(activeSectionId, newContent);
+    
+    // Add to history (debounced)
+    if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+    autoSaveRef.current = setTimeout(() => {
+      setHistory(prev => {
+        const newHistory = prev.slice(0, historyIndex + 1);
+        newHistory.push(newContent);
+        return newHistory.slice(-50); // Keep last 50 changes
+      });
+      setHistoryIndex(prev => Math.min(prev + 1, 49));
+    }, 1000);
+  };
 
   // Handle section change
   const handleSectionChange = (sectionId: string) => {
+    if (sectionId === activeSectionId) return;
+    
     // Save current section
-    updateSection(activeSectionId, editorContent);
+    updateSectionStats(activeSectionId, editorContent);
     
     // Load new section
     setActiveSectionId(sectionId);
     const section = sections.find(s => s.id === sectionId);
     if (section) {
       setEditorContent(section.content);
+      setHistory([section.content]);
+      setHistoryIndex(0);
       setIsDirty(false);
     }
   };
 
   // Save all sections
-  const handleSave = () => {
-    updateSection(activeSectionId, editorContent);
+  const handleSave = async () => {
+    if (isSaving) return;
+    setIsSaving(true);
+    
+    // Update current section
+    updateSectionStats(activeSectionId, editorContent);
     
     // Create version snapshot
     const newVersion: Version = {
       id: `v${Date.now()}`,
       timestamp: new Date(),
       author: 'A. Kowalski',
-      changes: 'Auto-saved changes',
-      content: sections.reduce((acc, s) => ({ ...acc, [s.id]: s.content }), {})
+      changes: isDirty ? 'Manual save' : 'Auto-saved',
+      content: sections.reduce((acc, s) => ({ 
+        ...acc, 
+        [s.id]: s.id === activeSectionId ? editorContent : s.content 
+      }), {})
     };
-    setVersions(prev => [newVersion, ...prev].slice(0, 20)); // Keep last 20 versions
     
+    setVersions(prev => [newVersion, ...prev].slice(0, 20));
     setIsDirty(false);
-    toast.success('Application saved', { description: 'All changes have been saved' });
+    setIsSaving(false);
+    
+    toast.success('Application saved', { 
+      description: `Saved at ${new Date().toLocaleTimeString()}` 
+    });
+  };
+
+  // Undo
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const content = history[newIndex];
+      setEditorContent(content);
+      updateSectionStats(activeSectionId, content);
+      toast.success('Undo');
+    }
+  };
+
+  // Redo
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      const content = history[newIndex];
+      setEditorContent(content);
+      updateSectionStats(activeSectionId, content);
+      toast.success('Redo');
+    }
   };
 
   // Apply template
   const applyTemplate = (template: Template) => {
-    if (confirm('This will replace current content. Continue?')) {
-      setSections(prev => prev.map(s => ({
-        ...s,
-        content: template.sections[s.id] || s.content,
-        lastModified: new Date()
-      })));
+    const sectionCount = Object.keys(template.sections).length;
+    if (sectionCount === 0) {
+      toast.error('This template has no content');
+      return;
+    }
+    
+    if (confirm(`Apply template "${template.title}"? This will replace content in ${sectionCount} sections.`)) {
+      setSections(prev => prev.map(s => {
+        const templateContent = template.sections[s.id];
+        if (templateContent) {
+          return {
+            ...s,
+            content: templateContent,
+            wordCount: templateContent.split(/\s+/).length,
+            isComplete: templateContent.split(/\s+/).length >= s.targetWords * 0.8,
+            lastModified: new Date()
+          };
+        }
+        return s;
+      }));
       
-      const currentSection = sections.find(s => s.id === activeSectionId);
-      if (currentSection && template.sections[activeSectionId]) {
-        setEditorContent(template.sections[activeSectionId]);
+      // Update current editor content
+      const currentTemplateContent = template.sections[activeSectionId];
+      if (currentTemplateContent) {
+        setEditorContent(currentTemplateContent);
+        updateSectionStats(activeSectionId, currentTemplateContent);
       }
       
       setShowTemplates(false);
@@ -324,51 +459,73 @@ Start by selecting a template or begin writing.`,
   const handleAIAction = async (action: string) => {
     setIsGenerating(true);
     
-    // Simulate AI processing
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(r, 1200));
     
     const section = sections.find(s => s.id === activeSectionId);
+    const currentWords = section?.wordCount || 0;
+    const targetWords = section?.targetWords || 250;
+    
     const responses: Record<string, AIMessage> = {
-      'Improve clarity': {
+      'Browse Templates': {
         id: `ai-${Date.now()}`,
         type: 'ai',
-        content: `✓ Clarity Analysis for "${section?.title}"
+        content: 'I can help you browse templates. Click the "Templates" button in the left sidebar to see available options.',
+      },
+      'Writing Tips': {
+        id: `ai-${Date.now()}`,
+        type: 'ai',
+        content: `Tips for ${section?.title}:
 
-I found 3 areas to improve:
-1. Opening paragraph could be more direct
-2. Consider breaking the long sentence in paragraph 2
-3. Add transition between sections 2 and 3`,
-        suggestion: `This project will reduce municipal energy consumption by 40%, saving €180,000 annually while cutting CO₂ emissions by 1,200 tonnes per year.`,
-        actions: ['Apply suggestion', 'Show all improvements', 'Dismiss']
+1. Be specific and measurable
+2. Use active voice
+3. Avoid jargon
+4. Include concrete numbers
+5. Link objectives to EU priorities`,
       },
-      'Add metrics': {
-        id: `ai-${Date.now()}`,
-        type: 'ai',
-        content: 'Here are suggested metrics for your project:',
-        suggestion: `KEY PERFORMANCE INDICATORS:
-• Energy reduction: 2,500 MWh/year (40% improvement)
-• CO₂ reduction: 1,200 tonnes/year
-• Cost savings: €180,000/year
-• ROI period: 6.7 years`,
-        actions: ['Add to document', 'Customize', 'More KPIs']
-      },
-      'Check compliance': {
+      'Compliance Check': {
         id: `ai-${Date.now()}`,
         type: 'ai',
         content: `✓ Compliance Check Results
 
 ✓ State aid rules (GBER)
 ✓ Public procurement regulations
-✓ Environmental impact assessment
-⚠ Consider adding: EU Green Deal alignment statement`,
-        actions: ['Add alignment text', 'Full report', 'Dismiss']
+⚠ EU Green Deal alignment needs strengthening
+⚠ Consider adding DNSH assessment`,
+        suggestion: `This project contributes to the EU Green Deal by reducing CO₂ emissions by 1,200 tonnes annually, supporting the EU's climate neutrality goal for 2050.`,
+        actions: ['Add to document', 'Full compliance report']
+      },
+      'Improve clarity': {
+        id: `ai-${Date.now()}`,
+        type: 'ai',
+        content: `✓ Clarity Analysis
+
+Current: ${currentWords} words (target: ${targetWords})
+
+Suggestions:
+1. Opening could be more direct
+2. Break long sentences in paragraph 2
+3. Add transition between sections`,
+        suggestion: `This project will reduce municipal energy costs by €180,000 annually while cutting CO₂ emissions by 1,200 tonnes per year.`,
+        actions: ['Apply suggestion', 'Show more improvements']
+      },
+      'Add metrics': {
+        id: `ai-${Date.now()}`,
+        type: 'ai',
+        content: 'Key metrics for your project:',
+        suggestion: `KEY PERFORMANCE INDICATORS:
+• Energy reduction: 2,500 MWh/year (40% improvement)
+• CO₂ reduction: 1,200 tonnes/year
+• Cost savings: €180,000/year
+• ROI period: 6.7 years
+• Jobs created: 15 direct, 25 indirect`,
+        actions: ['Add to document', 'Customize numbers']
       }
     };
     
     const response = responses[action] || {
       id: `ai-${Date.now()}`,
       type: 'ai',
-      content: 'I can help you with this section. What specific aspect would you like to improve?',
+      content: 'I can help with this section. What would you like to improve?',
       actions: ['Improve clarity', 'Add metrics', 'Check compliance']
     };
     
@@ -379,32 +536,50 @@ I found 3 areas to improve:
   // Apply AI suggestion
   const applySuggestion = (suggestion: string) => {
     const newContent = editorContent + '\n\n' + suggestion;
-    setEditorContent(newContent);
-    updateSection(activeSectionId, newContent);
+    handleContentChange(newContent);
     toast.success('Suggestion applied');
   };
 
   // Find and Replace
-  const handleFindReplace = (replace: boolean) => {
+  const handleFindNext = () => {
+    if (!findText || !editorRef.current) return;
+    
+    const text = editorContent;
+    const regex = new RegExp(findText, 'gi');
+    const matches = [...text.matchAll(regex)];
+    
+    if (matches.length > 0) {
+      const nextMatch = (currentMatch + 1) % matches.length;
+      setCurrentMatch(nextMatch);
+      const match = matches[nextMatch];
+      
+      // Focus and select in textarea
+      editorRef.current.focus();
+      editorRef.current.setSelectionRange(match.index!, match.index! + findText.length);
+    }
+  };
+
+  const handleReplace = () => {
     if (!findText) return;
     
-    let count = 0;
-    let newContent = editorContent;
+    const regex = new RegExp(findText, 'gi');
+    const newContent = editorContent.replace(regex, replaceText);
+    const count = (editorContent.match(regex) || []).length;
     
-    if (replace && replaceText !== undefined) {
-      const regex = new RegExp(findText, 'gi');
-      newContent = editorContent.replace(regex, () => {
-        count++;
-        return replaceText;
-      });
-      setEditorContent(newContent);
-      updateSection(activeSectionId, newContent);
-      toast.success(`Replaced ${count} occurrences`);
-    } else {
-      const regex = new RegExp(findText, 'gi');
-      const matches = editorContent.match(regex);
-      setFindMatches(matches?.length || 0);
-    }
+    handleContentChange(newContent);
+    toast.success(`Replaced ${count} occurrence${count !== 1 ? 's' : ''}`);
+    setShowFindReplace(false);
+  };
+
+  const handleReplaceAll = () => {
+    if (!findText) return;
+    
+    const regex = new RegExp(findText, 'gi');
+    const newContent = editorContent.replace(regex, replaceText);
+    const count = (editorContent.match(regex) || []).length;
+    
+    handleContentChange(newContent);
+    toast.success(`Replaced ${count} occurrence${count !== 1 ? 's' : ''}`);
   };
 
   // Add comment
@@ -430,8 +605,14 @@ I found 3 areas to improve:
 
   // Export functions
   const exportToPDF = () => {
-    toast.success('Generating PDF...', { description: 'Download will start shortly' });
-    // In real implementation, use a PDF library
+    toast.promise(
+      new Promise(resolve => setTimeout(resolve, 2000)),
+      {
+        loading: 'Generating PDF...',
+        success: 'PDF ready for download',
+        error: 'Failed to generate PDF'
+      }
+    );
   };
 
   const exportToWord = () => {
@@ -441,38 +622,43 @@ I found 3 areas to improve:
     const a = document.createElement('a');
     a.href = url;
     a.download = 'grant-application.doc';
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success('Word document exported');
   };
 
-  // Editor toolbar actions
-  const execCommand = (command: string, value: string | undefined = undefined) => {
-    // Focus editor first
-    if (editorRef.current) {
-      editorRef.current.focus();
-    }
+  // Format text helper
+  const formatText = (before: string, after: string = '') => {
+    const textarea = editorRef.current;
+    if (!textarea) return;
     
-    // Execute command
-    document.execCommand(command, false, value);
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = editorContent.substring(start, end);
     
-    // Update content state
-    if (editorRef.current) {
-      setEditorContent(editorRef.current.innerHTML);
-      setIsDirty(true);
-    }
+    const newText = editorContent.substring(0, start) + before + selectedText + after + editorContent.substring(end);
+    handleContentChange(newText);
+    
+    // Restore cursor position
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + before.length + selectedText.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
   };
 
   // Stats
   const activeSection = sections.find(s => s.id === activeSectionId);
   const totalWords = sections.reduce((sum, s) => sum + s.wordCount, 0);
   const totalTarget = sections.reduce((sum, s) => sum + s.targetWords, 0);
-  const completionPercent = Math.round((totalWords / totalTarget) * 100);
+  const completionPercent = Math.min(100, Math.round((totalWords / totalTarget) * 100));
   const completedSections = sections.filter(s => s.isComplete).length;
 
   return (
-    <div ref={containerRef} className="h-screen flex bg-primary">
-      {/* Left Sidebar - Navigation */}
+    <div className="h-screen flex bg-primary">
+      {/* Left Sidebar */}
       <div className="w-80 bg-secondary border-r border-theme flex flex-col">
         {/* Header */}
         <div className="p-5 border-b border-theme">
@@ -544,7 +730,7 @@ I found 3 areas to improve:
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`text-xs ${section.wordCount >= section.targetWords * 0.8 ? 'text-green-500' : 'text-secondary'}`}>
-                      {section.wordCount}/{section.targetWords} words
+                      {section.wordCount}/{section.targetWords}
                     </span>
                     {section.comments.length > 0 && (
                       <span className="flex items-center gap-0.5 text-xs text-amber-500">
@@ -563,11 +749,12 @@ I found 3 areas to improve:
         <div className="p-4 border-t border-theme space-y-2">
           <button 
             onClick={handleSave}
-            className="w-full btn-primary flex items-center justify-center gap-2"
+            disabled={isSaving}
+            className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            Save Now
-            {isDirty && <span className="w-2 h-2 bg-white rounded-full animate-pulse" />}
+            {isSaving ? 'Saving...' : 'Save Now'}
+            {isDirty && !isSaving && <span className="w-2 h-2 bg-white rounded-full animate-pulse" />}
           </button>
           
           <div className="grid grid-cols-2 gap-2">
@@ -592,61 +779,80 @@ I found 3 areas to improve:
       {/* Main Editor Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Toolbar */}
-        <div className="flex items-center gap-1 p-3 border-b border-theme bg-secondary flex-wrap">
+        <div className="flex items-center gap-1 p-2 border-b border-theme bg-secondary flex-wrap">
+          {/* Undo/Redo */}
+          <div className="flex items-center gap-0.5">
+            <button 
+              onClick={handleUndo}
+              disabled={historyIndex <= 0}
+              className="toolbar-btn disabled:opacity-30"
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={handleRedo}
+              disabled={historyIndex >= history.length - 1}
+              className="toolbar-btn disabled:opacity-30"
+              title="Redo (Ctrl+Y)"
+            >
+              <Redo className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="w-px h-5 bg-theme mx-1" />
+          
           {/* Text Style */}
           <div className="flex items-center gap-0.5">
-            <button onClick={() => execCommand('bold')} className="toolbar-btn" title="Bold (Ctrl+B)">
+            <button onClick={() => formatText('**', '**')} className="toolbar-btn" title="Bold">
               <Bold className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('italic')} className="toolbar-btn" title="Italic (Ctrl+I)">
+            <button onClick={() => formatText('*', '*')} className="toolbar-btn" title="Italic">
               <Italic className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('underline')} className="toolbar-btn" title="Underline">
+            <button onClick={() => formatText('__', '__')} className="toolbar-btn" title="Underline">
               <Underline className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('strikeThrough')} className="toolbar-btn" title="Strikethrough">
+            <button onClick={() => formatText('~~', '~~')} className="toolbar-btn" title="Strikethrough">
               <Strikethrough className="w-4 h-4" />
             </button>
           </div>
           
-          <div className="w-px h-5 bg-theme mx-2" />
+          <div className="w-px h-5 bg-theme mx-1" />
           
           {/* Alignment */}
           <div className="flex items-center gap-0.5">
-            <button onClick={() => execCommand('justifyLeft')} className="toolbar-btn" title="Align Left">
+            <button onClick={() => formatText('<!-- align:left -->\n', '\n')} className="toolbar-btn" title="Align Left">
               <AlignLeft className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('justifyCenter')} className="toolbar-btn" title="Align Center">
+            <button onClick={() => formatText('<!-- align:center -->\n', '\n')} className="toolbar-btn" title="Align Center">
               <AlignCenter className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('justifyRight')} className="toolbar-btn" title="Align Right">
+            <button onClick={() => formatText('<!-- align:right -->\n', '\n')} className="toolbar-btn" title="Align Right">
               <AlignRight className="w-4 h-4" />
             </button>
           </div>
           
-          <div className="w-px h-5 bg-theme mx-2" />
+          <div className="w-px h-5 bg-theme mx-1" />
           
           {/* Lists */}
           <div className="flex items-center gap-0.5">
-            <button onClick={() => execCommand('insertUnorderedList')} className="toolbar-btn" title="Bullet List">
+            <button onClick={() => formatText('\n• ', '')} className="toolbar-btn" title="Bullet List">
               <List className="w-4 h-4" />
             </button>
-            <button onClick={() => execCommand('insertOrderedList')} className="toolbar-btn" title="Numbered List">
+            <button onClick={() => formatText('\n1. ', '')} className="toolbar-btn" title="Numbered List">
               <ListOrdered className="w-4 h-4" />
             </button>
           </div>
           
-          <div className="w-px h-5 bg-theme mx-2" />
+          <div className="w-px h-5 bg-theme mx-1" />
           
           {/* Insert */}
           <div className="flex items-center gap-0.5">
-            <button onClick={() => execCommand('createLink')} className="toolbar-btn" title="Insert Link">
+            <button onClick={() => formatText('[', '](url)')} className="toolbar-btn" title="Insert Link">
               <Link className="w-4 h-4" />
             </button>
-            <button className="toolbar-btn" title="Insert Table">
-              <Table className="w-4 h-4" />
-            </button>
-            <button onClick={() => execCommand('formatBlock', 'blockquote')} className="toolbar-btn" title="Quote">
+            <button onClick={() => formatText('\n> ', '')} className="toolbar-btn" title="Quote">
               <Quote className="w-4 h-4" />
             </button>
           </div>
@@ -688,13 +894,11 @@ I found 3 areas to improve:
 
         {/* Editor Content */}
         <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
-            <div className="max-w-4xl mx-auto p-8">
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="max-w-4xl mx-auto">
               {/* Section Header */}
               <div className="mb-6">
                 <h1 className="text-2xl font-semibold text-primary mb-2">{activeSection?.title}</h1>
-                
-                {/* Guidance */}
                 <div className="flex items-start gap-3 p-4 bg-accent-light/50 border border-accent/20 rounded-xl">
                   <Target className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                   <p className="text-sm text-secondary">{activeSection?.guidance}</p>
@@ -703,43 +907,38 @@ I found 3 areas to improve:
 
               {/* Editor */}
               {showPreview ? (
-                <div 
-                  className="editor-content prose prose-invert max-w-none min-h-[500px] p-6 bg-surface rounded-xl border border-theme"
-                  dangerouslySetInnerHTML={{ __html: editorContent }}
-                />
+                <div className="prose dark:prose-invert max-w-none min-h-[500px] p-6 bg-surface rounded-xl border border-theme">
+                  <pre className="whitespace-pre-wrap font-sans text-primary">{editorContent}</pre>
+                </div>
               ) : (
-                <div
+                <textarea
                   ref={editorRef}
-                  contentEditable
-                  className="editor-content min-h-[500px] p-6 bg-surface rounded-xl border border-theme focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-                  onInput={(e) => {
-                    setEditorContent(e.currentTarget.innerHTML);
-                    setIsDirty(true);
-                  }}
-                  dangerouslySetInnerHTML={{ __html: editorContent }}
-                  data-placeholder={`Write your ${activeSection?.title.toLowerCase()} here...`}
+                  value={editorContent}
+                  onChange={(e) => handleContentChange(e.target.value)}
+                  placeholder={`Write your ${activeSection?.title.toLowerCase()} here...`}
+                  className="w-full min-h-[500px] p-6 bg-surface rounded-xl border border-theme focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 resize-none text-primary font-sans leading-relaxed"
+                  spellCheck={false}
                 />
               )}
 
-              {/* Word Count Goal */}
-              <div className="mt-4 flex items-center gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-secondary">Word count goal</span>
-                    <span className={`font-medium ${activeSection && activeSection.wordCount >= activeSection.targetWords * 0.8 ? 'text-green-500' : 'text-secondary'}`}>
-                      {activeSection?.wordCount || 0} / {activeSection?.targetWords} words
-                    </span>
-                  </div>
-                  <div className="h-2 bg-tertiary rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        activeSection && activeSection.wordCount >= activeSection.targetWords * 0.8 
-                          ? 'bg-green-500' 
-                          : 'bg-accent'
-                      }`}
-                      style={{ width: `${Math.min(100, ((activeSection?.wordCount || 0) / (activeSection?.targetWords || 1)) * 100)}%` }}
-                    />
-                  </div>
+              {/* Word Count */}
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm mb-1">
+                  <span className="text-secondary">Word count</span>
+                  <span className={`font-medium ${activeSection && activeSection.wordCount >= activeSection.targetWords * 0.8 ? 'text-green-500' : 'text-secondary'}`}>
+                    {activeSection?.wordCount || 0} / {activeSection?.targetWords} words
+                    {activeSection && activeSection.wordCount >= activeSection.targetWords * 0.8 && ' ✓'}
+                  </span>
+                </div>
+                <div className="h-2 bg-tertiary rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      activeSection && activeSection.wordCount >= activeSection.targetWords * 0.8 
+                        ? 'bg-green-500' 
+                        : 'bg-accent'
+                    }`}
+                    style={{ width: `${Math.min(100, ((activeSection?.wordCount || 0) / (activeSection?.targetWords || 1)) * 100)}%` }}
+                  />
                 </div>
               </div>
             </div>
@@ -804,7 +1003,7 @@ I found 3 areas to improve:
         </div>
       </div>
 
-      {/* AI Assistant Panel */}
+      {/* AI Panel */}
       {showAI && (
         <div className="w-96 bg-secondary border-l border-theme flex flex-col">
           <div className="p-4 border-b border-theme">
@@ -891,7 +1090,7 @@ I found 3 areas to improve:
                 value={aiInput}
                 onChange={(e) => setAiInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleAIAction(aiInput)}
-                placeholder="Ask AI for help..."
+                placeholder="Ask AI..."
                 className="flex-1 input text-sm"
               />
               <button 
@@ -969,19 +1168,25 @@ I found 3 areas to improve:
                       <button 
                         onClick={() => {
                           if (confirm('Restore this version? Current changes will be lost.')) {
-                            // Restore content from this version
                             Object.entries(version.content).forEach(([sectionId, content]) => {
                               if (sectionId === activeSectionId) {
-                                setEditorContent(content);
+                                handleContentChange(content);
                               }
                             });
-                            setSections(prev => prev.map(s => ({
-                              ...s,
-                              content: version.content[s.id] || s.content,
-                              wordCount: (version.content[s.id] || '').trim().split(/\s+/).filter((w: string) => w.length > 0).length
-                            })));
+                            setSections(prev => prev.map(s => {
+                              const versionContent = version.content[s.id];
+                              if (versionContent) {
+                                return {
+                                  ...s,
+                                  content: versionContent,
+                                  wordCount: versionContent.split(/\s+/).filter(w => w.length > 0).length,
+                                  isComplete: versionContent.split(/\s+/).filter(w => w.length > 0).length >= s.targetWords * 0.8
+                                };
+                              }
+                              return s;
+                            }));
                             setShowVersions(false);
-                            toast.success(`Restored version from ${version.timestamp.toLocaleString()}`);
+                            toast.success('Version restored');
                           }
                         }}
                         className="text-accent text-sm hover:underline"
@@ -1010,16 +1215,18 @@ I found 3 areas to improve:
             <div className="space-y-4">
               <div>
                 <label className="text-sm text-secondary mb-2 block">Find</label>
-                <input
-                  type="text"
-                  value={findText}
-                  onChange={(e) => setFindText(e.target.value)}
-                  className="w-full input"
-                  placeholder="Search text..."
-                />
-                {findMatches > 0 && (
-                  <p className="text-xs text-secondary mt-1">{findMatches} matches found</p>
-                )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={findText}
+                    onChange={(e) => setFindText(e.target.value)}
+                    className="flex-1 input"
+                    placeholder="Search text..."
+                  />
+                  <button onClick={handleFindNext} className="btn-secondary">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="text-sm text-secondary mb-2 block">Replace with</label>
@@ -1033,14 +1240,14 @@ I found 3 areas to improve:
               </div>
               <div className="flex gap-3">
                 <button 
-                  onClick={() => handleFindReplace(false)}
-                  className="flex-1 btn-secondary"
+                  onClick={handleReplace}
+                  className="flex-1 btn-primary"
                 >
-                  Find All
+                  Replace
                 </button>
                 <button 
-                  onClick={() => handleFindReplace(true)}
-                  className="flex-1 btn-primary"
+                  onClick={handleReplaceAll}
+                  className="flex-1 btn-secondary"
                 >
                   Replace All
                 </button>
@@ -1084,19 +1291,21 @@ I found 3 areas to improve:
 
       <style>{`
         .toolbar-btn {
-          padding: 0.5rem;
-          border-radius: 0.5rem;
+          padding: 0.375rem;
+          border-radius: 0.375rem;
           color: var(--color-text-secondary);
           transition: all 0.15s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .toolbar-btn:hover {
           background-color: var(--color-bg-tertiary);
           color: var(--color-text-primary);
         }
-        .editor-content:empty:before {
-          content: attr(data-placeholder);
-          color: var(--color-text-muted);
-          font-style: italic;
+        .toolbar-btn.disabled\:opacity-30:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
         }
       `}</style>
     </div>
