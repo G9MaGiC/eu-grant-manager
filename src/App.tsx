@@ -30,7 +30,7 @@ function StarfieldBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-50 dark:opacity-100 transition-opacity">
       {stars.map((star) => (
         <div
           key={star.id}
@@ -60,17 +60,16 @@ function KeyboardShortcutsModal({ onClose }: { onClose: () => void }) {
     { key: '⌘7', description: 'Go to Budget Calculator' },
     { key: '⌘8', description: 'Go to Team Management' },
     { key: '⌘S', description: 'Save current document' },
-    { key: '⌘N', description: 'Add new grant' },
     { key: '?', description: 'Show this help' },
     { key: 'Esc', description: 'Close modal / Cancel' },
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[400px] max-w-[90vw]">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-surface border border-theme rounded-2xl p-6 w-full max-w-md shadow-2xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-[#F3F6FF]">Keyboard Shortcuts</h2>
-          <button onClick={onClose} className="text-[#A9B3D0] hover:text-[#F3F6FF]">
+          <h2 className="text-xl font-semibold text-primary">Keyboard Shortcuts</h2>
+          <button onClick={onClose} className="p-2 hover:bg-tertiary rounded-lg text-secondary hover:text-primary transition-colors">
             <span className="sr-only">Close</span>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -80,8 +79,8 @@ function KeyboardShortcutsModal({ onClose }: { onClose: () => void }) {
         <div className="space-y-2">
           {shortcuts.map((shortcut, i) => (
             <div key={i} className="flex items-center justify-between py-2">
-              <span className="text-[#A9B3D0] text-sm">{shortcut.description}</span>
-              <kbd className="px-2 py-1 bg-[#161F32] text-[#F3F6FF] text-xs rounded-lg border border-[#273155]">
+              <span className="text-secondary text-sm">{shortcut.description}</span>
+              <kbd className="px-2 py-1 bg-tertiary text-primary text-xs rounded-lg border border-theme font-mono">
                 {shortcut.key}
               </kbd>
             </div>
@@ -234,26 +233,26 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full bg-[#0B0F1C] flex items-center justify-center">
+      <div className="h-screen w-full bg-primary flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 bg-[#4F46E5] rounded-xl flex items-center justify-center animate-pulse">
+          <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center animate-pulse shadow-lg shadow-accent/30">
             <span className="text-white font-bold text-xl">EU</span>
           </div>
-          <p className="text-[#A9B3D0] text-sm">Loading Grant Manager...</p>
+          <p className="text-secondary text-sm">Loading Grant Manager...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen w-full bg-[#0B0F1C] flex overflow-hidden">
+    <div className="h-screen w-full bg-primary flex overflow-hidden">
       <Sidebar 
         currentView={currentView} 
         onViewChange={handleViewChange}
         selectedGrantId={selectedGrantId}
       />
 
-      <main className="main-content flex-1 ml-[260px] h-full overflow-y-auto scrollbar-thin">
+      <main className="main-content flex-1 lg:ml-[260px] h-full overflow-y-auto scrollbar-thin relative">
         {renderView()}
       </main>
 
@@ -265,9 +264,9 @@ function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: '#111827',
-            border: '1px solid #273155',
-            color: '#F3F6FF',
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            color: 'var(--color-text-primary)',
           },
         }}
       />
@@ -286,10 +285,10 @@ function App() {
       <div className="fixed bottom-4 right-4 z-50">
         <button 
           onClick={() => setShowShortcuts(true)}
-          className="p-2 bg-[#161F32] border border-[#273155] rounded-lg text-[#A9B3D0] hover:text-[#F3F6FF] hover:border-[#4F46E5]/50 transition-colors"
+          className="p-2 bg-surface border border-theme rounded-lg text-secondary hover:text-primary hover:border-accent/50 transition-colors shadow-lg"
           title="Keyboard shortcuts"
         >
-          <kbd className="text-xs">?</kbd>
+          <kbd className="text-xs font-mono">?</kbd>
         </button>
       </div>
     </div>
