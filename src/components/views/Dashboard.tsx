@@ -197,7 +197,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
 
       {/* Stats Row */}
       <div ref={statsRef} className="grid grid-cols-3 gap-5">
-        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+        <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Active grants</p>
@@ -214,7 +214,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <MiniChart data={[8, 9, 10, 11, 11, 12]} color="#4F46E5" />
         </div>
 
-        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+        <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Funding pipeline</p>
@@ -231,7 +231,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <MiniChart data={pipelineData} color="#22C55E" />
         </div>
 
-        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+        <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Submissions this month</p>

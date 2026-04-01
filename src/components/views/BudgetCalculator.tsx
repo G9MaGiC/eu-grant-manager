@@ -204,7 +204,7 @@ export function BudgetCalculator() {
             {/* Add Button */}
             <button 
               onClick={addItem}
-              className="w-full py-3 border-2 border-dashed border-theme rounded-xl text-secondary hover:text-primary hover:border-[#4F46E5]/50 transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3 border-2 border-dashed border-theme rounded-xl text-secondary hover:text-primary hover:border-accent/50 transition-colors flex items-center justify-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Budget Item

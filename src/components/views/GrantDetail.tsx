@@ -221,9 +221,9 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column */}
-        <div ref={leftPanelRef} className="col-span-7 space-y-5">
+        <div ref={leftPanelRef} className="lg:col-span-7 space-y-5">
           {/* Header Card */}
           <div className="card-dark p-6">
             <div className="flex items-start justify-between mb-4">
@@ -339,7 +339,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                           task.completed 
                             ? 'bg-accent border-[#4F46E5]' 
-                            : 'border-theme hover:border-[#4F46E5]'
+                            : 'border-theme hover:border-accent'
                         }`}
                       >
                         {task.completed && <Check className="w-3.5 h-3.5 text-white" />}
@@ -483,7 +483,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
                       <p className="text-primary">{item.action}</p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-secondary text-sm">{item.date}</span>
-                        <span className="text-[#273155]">•</span>
+                        <span className="text-muted">•</span>
                         <span className="text-secondary text-sm">{item.user}</span>
                       </div>
                     </div>
@@ -495,7 +495,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
         </div>
 
         {/* Right Column */}
-        <div ref={rightPanelRef} className="col-span-5 space-y-5">
+        <div ref={rightPanelRef} className="lg:col-span-5 space-y-5">
           {/* Timeline */}
           <div className="card-dark p-5">
             <h2 className="text-lg font-semibold text-primary mb-4">Timeline</h2>
@@ -508,7 +508,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
                       event.type === 'milestone' ? 'bg-[#22C55E]' : 'bg-accent'
                     }`} />
                     {index < (grant.timeline?.length || 0) - 1 && (
-                      <div className="w-0.5 h-full bg-[#273155] my-1" />
+                      <div className="w-0.5 h-full bg-border-strong my-1" />
                     )}
                   </div>
                   <div className="pb-5">
@@ -549,7 +549,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
                     <p className="text-primary text-sm">{note.content}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-secondary text-xs">{note.author}</span>
-                      <span className="text-[#273155]">•</span>
+                      <span className="text-muted">•</span>
                       <span className="text-secondary text-xs mono">{note.createdAt}</span>
                     </div>
                   </div>
@@ -643,7 +643,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
               </button>
             </div>
             <div 
-              className="border-2 border-dashed border-theme rounded-xl p-8 text-center hover:border-[#4F46E5]/50 transition-colors cursor-pointer"
+              className="border-2 border-dashed border-theme rounded-xl p-8 text-center hover:border-accent/50 transition-colors cursor-pointer"
               onClick={handleUpload}
             >
               <Upload className="w-12 h-12 text-secondary mx-auto mb-4" />

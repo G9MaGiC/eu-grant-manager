@@ -196,7 +196,7 @@ export function Reports() {
           return (
             <div 
               key={card.id}
-              className="export-card card-dark p-6 hover:border-[#4F46E5]/35 transition-all duration-250 hover:-translate-y-1 group"
+              className="export-card card-dark p-6 hover:border-accent/35 transition-all duration-250 hover:-translate-y-1 group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-14 h-14 ${card.bgColor} rounded-xl flex items-center justify-center`}>

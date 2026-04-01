@@ -311,7 +311,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
         {filteredRecommendations.map((rec) => (
           <div 
             key={rec.id}
-            className="rec-card card-dark p-5 hover:border-[#4F46E5]/30 transition-all duration-200 hover:-translate-y-1"
+            className="rec-card card-dark p-5 hover:border-accent/30 transition-all duration-200 hover:-translate-y-1"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-4">

@@ -325,8 +325,8 @@ export function Pipeline({ onViewChange }: PipelineProps) {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
           {programFilters.map((filter) => (
             <button
               key={filter}
@@ -350,14 +350,14 @@ export function Pipeline({ onViewChange }: PipelineProps) {
               placeholder="Search grants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2.5 text-sm text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all"
+              className="w-64 bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2.5 text-sm text-primary placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
             />
           </div>
           
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as GrantStatus | 'All')}
-            className="bg-tertiary border border-theme rounded-xl px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+            className="bg-tertiary border border-theme rounded-xl px-4 py-2.5 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
           >
             <option value="All">All statuses</option>
             <option value="not-started">Not started</option>
@@ -482,7 +482,7 @@ export function Pipeline({ onViewChange }: PipelineProps) {
                 </td>
                 <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
                   <div className="flex items-center gap-2">
-                    <div className="w-16 h-2 bg-[#273155] rounded-full overflow-hidden">
+                    <div className="w-16 h-2.5 bg-tertiary rounded-full overflow-hidden border border-theme">
                       <div 
                         className="h-full bg-accent rounded-full transition-all duration-600"
                         style={{ width: `${grant.fitScore}%` }}
@@ -493,7 +493,7 @@ export function Pipeline({ onViewChange }: PipelineProps) {
                 </td>
                 <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 bg-accent/20 rounded-full flex items-center justify-center border border-[#4F46E5]/30">
+                    <div className="w-7 h-7 bg-accent/20 rounded-full flex items-center justify-center border border-accent/30">
                       <span className="text-accent text-xs font-medium">{grant.owner.name.charAt(0)}</span>
                     </div>
                     <span className="text-secondary text-sm">{grant.owner.name}</span>

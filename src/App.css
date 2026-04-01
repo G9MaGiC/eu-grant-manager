@@ -16,18 +16,18 @@
 }
 
 .main-content::-webkit-scrollbar-thumb {
-  background: #273155;
+  background: var(--color-border-strong);
   border-radius: 4px;
 }
 
 .main-content::-webkit-scrollbar-thumb:hover {
-  background: #374766;
+  background: var(--color-text-muted);
 }
 
 /* Selection color */
 ::selection {
-  background: rgba(79, 70, 229, 0.3);
-  color: #F3F6FF;
+  background: var(--color-accent-light);
+  color: var(--color-text-primary);
 }
 
 /* Focus styles */
