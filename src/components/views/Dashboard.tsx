@@ -1,0 +1,476 @@
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { 
+  TrendingUp, 
+  FileCheck, 
+  Clock, 
+  Plus, 
+  FileText, 
+  Upload, 
+  BarChart3,
+  AlertCircle,
+  ChevronRight,
+  ArrowUpRight,
+  Target,
+  Euro,
+  Calendar,
+  CheckCircle2,
+  MoreHorizontal,
+  RefreshCw
+} from 'lucide-react';
+import { dashboardStats, upcomingDeadlines, grants } from '@/data/mockData';
+import type { ViewType } from '@/types';
+import { toast } from 'sonner';
+
+interface DashboardProps {
+  onViewChange: (view: ViewType, grantId?: string) => void;
+}
+
+function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1.2 }: { value: number; prefix?: string; suffix?: string; duration?: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: value,
+      duration,
+      ease: 'power2.out',
+      onUpdate: () => setDisplayValue(Math.round(obj.val)),
+    });
+  }, [value, duration]);
+
+  const formatValue = (val: number) => {
+    if (value >= 1000000) {
+      return (val / 1000000).toFixed(1) + 'M';
+    }
+    if (value >= 1000) {
+      return (val / 1000).toFixed(0) + 'K';
+    }
+    return val.toString();
+  };
+
+  return (
+    <span ref={ref} className="mono text-3xl font-semibold text-[#F3F6FF]">
+      {prefix}{formatValue(displayValue)}{suffix}
+    </span>
+  );
+}
+
+function MiniChart({ data, color = '#4F46E5' }: { data: number[]; color?: string }) {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  
+  return (
+    <div className="flex items-end gap-1 h-10">
+      {data.map((val, i) => {
+        const height = ((val - min) / range) * 100;
+        return (
+          <div
+            key={i}
+            className="w-2 rounded-t transition-all duration-300"
+            style={{ 
+              height: `${Math.max(height, 10)}%`, 
+              backgroundColor: color,
+              opacity: 0.6 + (i / data.length) * 0.4
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+export function Dashboard({ onViewChange }: DashboardProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const deadlinesRef = useRef<HTMLDivElement>(null);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const recentRef = useRef<HTMLDivElement>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (statsRef.current) {
+        const cards = statsRef.current.querySelectorAll('.stat-card');
+        gsap.fromTo(cards,
+          { opacity: 0, y: 18 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.08, ease: 'power2.out', delay: 0.1 }
+        );
+      }
+      if (deadlinesRef.current) {
+        const items = deadlinesRef.current.querySelectorAll('.deadline-item');
+        gsap.fromTo(items,
+          { opacity: 0, x: -12 },
+          { opacity: 1, x: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out', delay: 0.3 }
+        );
+      }
+      if (actionsRef.current) {
+        const buttons = actionsRef.current.querySelectorAll('.action-btn');
+        gsap.fromTo(buttons,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power2.out', delay: 0.4 }
+        );
+      }
+      if (recentRef.current) {
+        const items = recentRef.current.querySelectorAll('.recent-item');
+        gsap.fromTo(items,
+          { opacity: 0, y: 8 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: 'power2.out', delay: 0.5 }
+        );
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    toast.promise(
+      new Promise(resolve => setTimeout(resolve, 1500)),
+      {
+        loading: 'Refreshing dashboard data...',
+        success: 'Dashboard updated successfully',
+        error: 'Failed to refresh',
+      }
+    );
+    setTimeout(() => setIsRefreshing(false), 1500);
+  };
+
+  const handleGrantClick = (grantId: string) => {
+    onViewChange('grant-detail', grantId);
+  };
+
+  const handleQuickAction = (action: string) => {
+    switch (action) {
+      case 'find':
+        onViewChange('recommendations');
+        break;
+      case 'draft':
+        onViewChange('builder');
+        break;
+      case 'upload':
+        toast.success('Document upload ready', {
+          description: 'Select a grant to upload documents to',
+        });
+        onViewChange('pipeline');
+        break;
+      case 'report':
+        onViewChange('reports');
+        break;
+    }
+  };
+
+  const getUrgencyColor = (daysLeft: number) => {
+    if (daysLeft <= 3) return 'border-l-[#EF4444] bg-[#EF4444]/5';
+    if (daysLeft <= 7) return 'border-l-[#F59E0B] bg-[#F59E0B]/5';
+    return 'border-l-[#4F46E5]';
+  };
+
+  const getUrgencyText = (daysLeft: number) => {
+    if (daysLeft <= 3) return 'text-[#EF4444]';
+    if (daysLeft <= 7) return 'text-[#F59E0B]';
+    return 'text-[#A9B3D0]';
+  };
+
+  // Mock chart data
+  const pipelineData = [2.1, 2.5, 2.8, 3.2, 3.8, 4.2];
+  const submissionsData = [1, 2, 1, 3, 2, 3];
+
+  return (
+    <div ref={containerRef} className="p-7 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#F3F6FF]">Dashboard</h1>
+          <p className="text-[#A9B3D0] mt-1">Here's what needs attention this week.</p>
+        </div>
+        <button 
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+          className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'loading-spinner' : ''}`} />
+        </button>
+      </div>
+
+      {/* Stats Row */}
+      <div ref={statsRef} className="grid grid-cols-3 gap-5">
+        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-[#A9B3D0] text-sm mb-1">Active grants</p>
+              <AnimatedNumber value={dashboardStats.activeGrants} />
+              <div className="flex items-center gap-1 mt-2 text-[#22C55E] text-xs">
+                <ArrowUpRight className="w-3 h-3" />
+                <span>+2 this month</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-[#4F46E5]/15 rounded-xl flex items-center justify-center group-hover:bg-[#4F46E5]/25 transition-colors">
+              <TrendingUp className="w-6 h-6 text-[#4F46E5]" />
+            </div>
+          </div>
+          <MiniChart data={[8, 9, 10, 11, 11, 12]} color="#4F46E5" />
+        </div>
+
+        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-[#A9B3D0] text-sm mb-1">Funding pipeline</p>
+              <AnimatedNumber value={dashboardStats.fundingPipeline} prefix="€" />
+              <div className="flex items-center gap-1 mt-2 text-[#22C55E] text-xs">
+                <ArrowUpRight className="w-3 h-3" />
+                <span>+€850K from last month</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-[#22C55E]/15 rounded-xl flex items-center justify-center group-hover:bg-[#22C55E]/25 transition-colors">
+              <Euro className="w-6 h-6 text-[#22C55E]" />
+            </div>
+          </div>
+          <MiniChart data={pipelineData} color="#22C55E" />
+        </div>
+
+        <div className="stat-card card-dark p-5 hover:border-[#4F46E5]/35 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-[#A9B3D0] text-sm mb-1">Submissions this month</p>
+              <AnimatedNumber value={dashboardStats.submissionsThisMonth} />
+              <div className="flex items-center gap-1 mt-2 text-[#A9B3D0] text-xs">
+                <Target className="w-3 h-3" />
+                <span>Target: 5</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 bg-[#F59E0B]/15 rounded-xl flex items-center justify-center group-hover:bg-[#F59E0B]/25 transition-colors">
+              <FileCheck className="w-6 h-6 text-[#F59E0B]" />
+            </div>
+          </div>
+          <MiniChart data={submissionsData} color="#F59E0B" />
+        </div>
+      </div>
+
+      {/* Middle Row */}
+      <div className="grid grid-cols-5 gap-5">
+        {/* Upcoming Deadlines */}
+        <div ref={deadlinesRef} className="col-span-3 card-dark p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold text-[#F3F6FF]">Upcoming deadlines</h2>
+              <span className="px-2 py-0.5 bg-[#EF4444]/15 text-[#EF4444] text-xs rounded-full">
+                {upcomingDeadlines.filter(d => d.daysLeft <= 7).length} urgent
+              </span>
+            </div>
+            <button 
+              onClick={() => onViewChange('pipeline')}
+              className="text-[#4F46E5] text-sm hover:underline flex items-center gap-1"
+            >
+              View all <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {upcomingDeadlines.map((deadline) => {
+              const grant = grants.find(g => g.id === deadline.grantId);
+              return (
+                <div 
+                  key={deadline.grantId}
+                  onClick={() => handleGrantClick(deadline.grantId)}
+                  className={`deadline-item flex items-center justify-between p-4 rounded-xl border-l-4 cursor-pointer hover:brightness-110 transition-all ${getUrgencyColor(deadline.daysLeft)}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      deadline.daysLeft <= 3 ? 'bg-[#EF4444]/15' : 
+                      deadline.daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-[#4F46E5]/15'
+                    }`}>
+                      <Clock className={`w-5 h-5 ${
+                        deadline.daysLeft <= 3 ? 'text-[#EF4444]' : 
+                        deadline.daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-[#4F46E5]'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className="text-[#F3F6FF] font-medium">{deadline.grantName}</p>
+                      <p className="text-[#A9B3D0] text-sm">{grant?.program} Program • €{(grant?.estimatedValue || 0) / 1000000}M</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[#F3F6FF] font-medium mono">{deadline.deadline}</p>
+                    <p className={`text-sm ${getUrgencyText(deadline.daysLeft)}`}>
+                      {deadline.daysLeft === 0 ? 'Due today!' : 
+                       deadline.daysLeft === 1 ? '1 day left' : 
+                       `${deadline.daysLeft} days left`}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div ref={actionsRef} className="col-span-2 card-dark p-5">
+          <h2 className="text-lg font-semibold text-[#F3F6FF] mb-4">Quick actions</h2>
+          <div className="space-y-3">
+            <button 
+              onClick={() => handleQuickAction('find')}
+              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+            >
+              <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center group-hover:bg-[#4F46E5]/25 transition-colors">
+                <Plus className="w-5 h-5 text-[#4F46E5]" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="text-[#F3F6FF] font-medium">Find new grants</p>
+                <p className="text-[#A9B3D0] text-sm">Discover opportunities</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+            </button>
+
+            <button 
+              onClick={() => handleQuickAction('draft')}
+              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+            >
+              <div className="w-10 h-10 bg-[#22C55E]/15 rounded-lg flex items-center justify-center group-hover:bg-[#22C55E]/25 transition-colors">
+                <FileText className="w-5 h-5 text-[#22C55E]" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="text-[#F3F6FF] font-medium">Draft application</p>
+                <p className="text-[#A9B3D0] text-sm">Continue writing</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+            </button>
+
+            <button 
+              onClick={() => handleQuickAction('upload')}
+              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+            >
+              <div className="w-10 h-10 bg-[#F59E0B]/15 rounded-lg flex items-center justify-center group-hover:bg-[#F59E0B]/25 transition-colors">
+                <Upload className="w-5 h-5 text-[#F59E0B]" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="text-[#F3F6FF] font-medium">Upload document</p>
+                <p className="text-[#A9B3D0] text-sm">Add to grant folder</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+            </button>
+
+            <button 
+              onClick={() => handleQuickAction('report')}
+              className="action-btn w-full flex items-center gap-3 p-4 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors group"
+            >
+              <div className="w-10 h-10 bg-[#8B5CF6]/15 rounded-lg flex items-center justify-center group-hover:bg-[#8B5CF6]/25 transition-colors">
+                <BarChart3 className="w-5 h-5 text-[#8B5CF6]" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="text-[#F3F6FF] font-medium">Generate report</p>
+                <p className="text-[#A9B3D0] text-sm">Export submission data</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#A9B3D0] group-hover:text-[#F3F6FF] group-hover:translate-x-1 transition-all" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="grid grid-cols-2 gap-5">
+        {/* Recent Activity */}
+        <div ref={recentRef} className="card-dark p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-[#F3F6FF]">Recent activity</h2>
+            <button className="text-[#A9B3D0] hover:text-[#F3F6FF] text-sm">
+              View all
+            </button>
+          </div>
+          <div className="space-y-3">
+            {[
+              { action: 'Document uploaded', item: 'Budget_Template.xlsx', grant: 'KPO Energy Retrofit', time: '2 hours ago', icon: Upload, color: 'text-[#F59E0B]' },
+              { action: 'Application submitted', item: 'CEF Transport Corridor', grant: 'Submitted to portal', time: 'Yesterday', icon: CheckCircle2, color: 'text-[#22C55E]' },
+              { action: 'Task completed', item: 'Draft project narrative', grant: 'FEnIKS Digital Services', time: '2 days ago', icon: FileCheck, color: 'text-[#4F46E5]' },
+              { action: 'Grant added', item: 'Smart City Data Platform', grant: 'KPO Program', time: '3 days ago', icon: Plus, color: 'text-[#8B5CF6]' },
+            ].map((activity, i) => (
+              <div key={i} className="recent-item flex items-center gap-4 p-3 bg-[#161F32] rounded-xl hover:bg-[#1E293B] transition-colors cursor-pointer">
+                <div className={`w-9 h-9 bg-[#161F32] rounded-lg flex items-center justify-center`}>
+                  <activity.icon className={`w-4 h-4 ${activity.color}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[#F3F6FF] text-sm font-medium">{activity.action}</p>
+                  <p className="text-[#A9B3D0] text-xs truncate">{activity.item} • {activity.grant}</p>
+                </div>
+                <span className="text-[#A9B3D0] text-xs">{activity.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Performance Summary */}
+        <div className="card-dark p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-[#F3F6FF]">Performance</h2>
+            <button className="p-1.5 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors">
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[#A9B3D0] text-sm">Success rate</span>
+                <span className="text-[#22C55E] font-medium">67%</span>
+              </div>
+              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
+                <div className="h-full w-[67%] bg-[#22C55E] rounded-full" />
+              </div>
+              <p className="text-[#A9B3D0] text-xs mt-1">4 won out of 6 submitted</p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[#A9B3D0] text-sm">Application completion</span>
+                <span className="text-[#4F46E5] font-medium">83%</span>
+              </div>
+              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
+                <div className="h-full w-[83%] bg-[#4F46E5] rounded-full" />
+              </div>
+              <p className="text-[#A9B3D0] text-xs mt-1">5 of 6 sections complete</p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[#A9B3D0] text-sm">Document readiness</span>
+                <span className="text-[#F59E0B] font-medium">72%</span>
+              </div>
+              <div className="h-2 bg-[#161F32] rounded-full overflow-hidden">
+                <div className="h-full w-[72%] bg-[#F59E0B] rounded-full" />
+              </div>
+              <p className="text-[#A9B3D0] text-xs mt-1">18 of 25 documents ready</p>
+            </div>
+
+            <div className="pt-3 border-t border-[#273155]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-[#A9B3D0]" />
+                  <span className="text-[#A9B3D0] text-sm">Next milestone</span>
+                </div>
+                <span className="text-[#F3F6FF] text-sm font-medium">Mar 18</span>
+              </div>
+              <p className="text-[#A9B3D0] text-xs mt-1 ml-6">KPO Energy Retrofit submission</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Alert Banner */}
+      <div className="flex items-center gap-3 p-4 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-xl">
+        <AlertCircle className="w-5 h-5 text-[#F59E0B] flex-shrink-0" />
+        <div className="flex-1">
+          <p className="text-[#F3F6FF] text-sm">
+            <span className="font-medium">Action required:</span> KPO Energy Retrofit deadline is in 3 days. Finalize budget table and prepare for submission.
+          </p>
+        </div>
+        <button 
+          onClick={() => handleGrantClick('1')}
+          className="px-4 py-2 bg-[#F59E0B]/20 hover:bg-[#F59E0B]/30 text-[#F59E0B] text-sm font-medium rounded-lg transition-colors whitespace-nowrap"
+        >
+          View grant →
+        </button>
+      </div>
+    </div>
+  );
+}

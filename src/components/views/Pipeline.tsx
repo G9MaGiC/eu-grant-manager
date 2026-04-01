@@ -1,0 +1,613 @@
+import { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { 
+  Plus, 
+  ChevronDown, 
+  Eye,
+  Search,
+  ArrowUpDown,
+  Trash2,
+  Copy,
+  Archive,
+  Download,
+  CheckSquare,
+  Square,
+  X,
+  Calendar,
+  Euro,
+  TrendingUp
+} from 'lucide-react';
+import { grants as initialGrants } from '@/data/mockData';
+import type { ViewType, GrantProgram, GrantStatus } from '@/types';
+import { toast } from 'sonner';
+
+interface PipelineProps {
+  onViewChange: (view: ViewType, grantId?: string) => void;
+}
+
+const programFilters: (GrantProgram | 'All')[] = ['All', 'KPO', 'FEnIKS', 'CEF', 'Horizon', 'ERDF'];
+
+const statusConfig: Record<GrantStatus, { label: string; className: string }> = {
+  'not-started': { label: 'Not started', className: 'status-not-started' },
+  'in-progress': { label: 'In progress', className: 'status-in-progress' },
+  'submitted': { label: 'Submitted', className: 'status-submitted' },
+  'won': { label: 'Won', className: 'status-won' },
+  'archived': { label: 'Archived', className: 'bg-[#6B7280]/15 text-[#6B7280]' },
+};
+
+const programColors: Record<GrantProgram, string> = {
+  'KPO': 'bg-[#4F46E5]/15 text-[#4F46E5]',
+  'FEnIKS': 'bg-[#22C55E]/15 text-[#22C55E]',
+  'CEF': 'bg-[#F59E0B]/15 text-[#F59E0B]',
+  'Horizon': 'bg-[#8B5CF6]/15 text-[#8B5CF6]',
+  'ERDF': 'bg-[#EC4899]/15 text-[#EC4899]',
+};
+
+export function Pipeline({ onViewChange }: PipelineProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
+  const [grants, setGrants] = useState(initialGrants);
+  const [activeFilter, setActiveFilter] = useState<GrantProgram | 'All'>('All');
+  const [statusFilter, setStatusFilter] = useState<GrantStatus | 'All'>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGrants, setSelectedGrants] = useState<Set<string>>(new Set());
+  const [sortBy, setSortBy] = useState<'deadline' | 'value' | 'fit'>('deadline');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newGrantName, setNewGrantName] = useState('');
+  const [newGrantProgram, setNewGrantProgram] = useState<GrantProgram>('KPO');
+  const [newGrantDeadline, setNewGrantDeadline] = useState('');
+  const [newGrantValue, setNewGrantValue] = useState('');
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (tableRef.current) {
+        const rows = tableRef.current.querySelectorAll('.grant-row');
+        gsap.fromTo(rows,
+          { opacity: 0, x: -12 },
+          { opacity: 1, x: 0, duration: 0.4, stagger: 0.04, ease: 'power2.out', delay: 0.2 }
+        );
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [activeFilter, statusFilter, searchQuery, sortBy, sortOrder]);
+
+  const filteredGrants = grants.filter(grant => {
+    const matchesProgram = activeFilter === 'All' || grant.program === activeFilter;
+    const matchesStatus = statusFilter === 'All' || grant.status === statusFilter;
+    const matchesSearch = grant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         grant.program.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesProgram && matchesStatus && matchesSearch;
+  }).sort((a, b) => {
+    let comparison = 0;
+    switch (sortBy) {
+      case 'deadline':
+        comparison = new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        break;
+      case 'value':
+        comparison = a.estimatedValue - b.estimatedValue;
+        break;
+      case 'fit':
+        comparison = a.fitScore - b.fitScore;
+        break;
+    }
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+
+  const toggleSelection = (grantId: string) => {
+    const newSelection = new Set(selectedGrants);
+    if (newSelection.has(grantId)) {
+      newSelection.delete(grantId);
+    } else {
+      newSelection.add(grantId);
+    }
+    setSelectedGrants(newSelection);
+  };
+
+  const selectAll = () => {
+    if (selectedGrants.size === filteredGrants.length) {
+      setSelectedGrants(new Set());
+    } else {
+      setSelectedGrants(new Set(filteredGrants.map(g => g.id)));
+    }
+  };
+
+  const handleGrantClick = (grantId: string) => {
+    onViewChange('grant-detail', grantId);
+  };
+
+  const handleDuplicate = (e: React.MouseEvent, grantId: string) => {
+    e.stopPropagation();
+    const grant = grants.find(g => g.id === grantId);
+    if (grant) {
+      const newGrant = {
+        ...grant,
+        id: `g${Date.now()}`,
+        name: `${grant.name} (Copy)`,
+        status: 'not-started' as GrantStatus,
+      };
+      setGrants([...grants, newGrant]);
+      toast.success('Grant duplicated successfully');
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent, grantId: string) => {
+    e.stopPropagation();
+    setGrants(grants.filter(g => g.id !== grantId));
+    toast.success('Grant deleted');
+  };
+
+  const handleBulkAction = (action: string) => {
+    if (selectedGrants.size === 0) {
+      toast.error('No grants selected');
+      return;
+    }
+    
+    if (action === 'export') {
+      const selectedData = grants.filter(g => selectedGrants.has(g.id));
+      const exportData = JSON.stringify(selectedData, null, 2);
+      const blob = new Blob([exportData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `grants-export-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${selectedGrants.size} grants`);
+    } else if (action === 'archive') {
+      setGrants(grants.map(g => 
+        selectedGrants.has(g.id) ? { ...g, status: 'archived' as GrantStatus } : g
+      ));
+      toast.success(`Archived ${selectedGrants.size} grants`);
+      setSelectedGrants(new Set());
+    }
+  };
+
+  const handleAddGrant = () => {
+    setShowAddModal(true);
+    // Reset form
+    setNewGrantName('');
+    setNewGrantProgram('KPO');
+    setNewGrantDeadline('');
+    setNewGrantValue('');
+  };
+
+  const handleSubmitNewGrant = () => {
+    if (!newGrantName.trim() || !newGrantDeadline || !newGrantValue) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
+    const value = parseFloat(newGrantValue);
+    if (isNaN(value) || value <= 0) {
+      toast.error('Please enter a valid value');
+      return;
+    }
+
+    const newGrant = {
+      id: `g${Date.now()}`,
+      name: newGrantName.trim(),
+      program: newGrantProgram,
+      deadline: newGrantDeadline,
+      status: 'not-started' as GrantStatus,
+      estimatedValue: value,
+      fitScore: Math.floor(Math.random() * 20) + 70, // Random fit score 70-90
+      owner: { name: 'A. Kowalski' },
+      description: 'New grant opportunity.',
+      tasks: [],
+      documents: [],
+      notes: [],
+      timeline: [{ id: `tm-${Date.now()}`, date: newGrantDeadline, title: 'Submit', type: 'deadline' as const }],
+    };
+    
+    setGrants([...grants, newGrant]);
+    toast.success('Grant added successfully');
+    setShowAddModal(false);
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-EU', {
+      style: 'currency',
+      currency: 'EUR',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    }).format(value);
+  };
+
+  const totalValue = filteredGrants.reduce((sum, g) => sum + g.estimatedValue, 0);
+  const avgFitScore = filteredGrants.length > 0 
+    ? Math.round(filteredGrants.reduce((sum, g) => sum + g.fitScore, 0) / filteredGrants.length) 
+    : 0;
+
+  return (
+    <div ref={containerRef} className="p-7 space-y-5">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#F3F6FF]">Pipeline</h1>
+          <p className="text-[#A9B3D0] mt-1">Manage all your grant opportunities in one place.</p>
+        </div>
+        <button 
+          onClick={handleAddGrant}
+          className="btn-primary flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Add grant
+        </button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-4 gap-4">
+        <div className="card-dark p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#4F46E5]/15 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-[#4F46E5]" />
+            </div>
+            <div>
+              <p className="text-[#A9B3D0] text-xs">Total grants</p>
+              <p className="text-[#F3F6FF] text-xl font-semibold">{filteredGrants.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#22C55E]/15 rounded-lg flex items-center justify-center">
+              <Euro className="w-5 h-5 text-[#22C55E]" />
+            </div>
+            <div>
+              <p className="text-[#A9B3D0] text-xs">Total value</p>
+              <p className="text-[#F3F6FF] text-xl font-semibold">{formatCurrency(totalValue)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#F59E0B]/15 rounded-lg flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-[#F59E0B]" />
+            </div>
+            <div>
+              <p className="text-[#A9B3D0] text-xs">This month</p>
+              <p className="text-[#F3F6FF] text-xl font-semibold">
+                {filteredGrants.filter(g => {
+                  const d = new Date(g.deadline + 'T00:00:00');
+                  const now = new Date();
+                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                }).length}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#8B5CF6]/15 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-5 h-5 text-[#8B5CF6]" />
+            </div>
+            <div>
+              <p className="text-[#A9B3D0] text-xs">Avg fit score</p>
+              <p className="text-[#F3F6FF] text-xl font-semibold">{avgFitScore}%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          {programFilters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-250 ${
+                activeFilter === filter
+                  ? 'bg-[#4F46E5] text-white'
+                  : 'bg-[#161F32] text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#1E293B]'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A9B3D0]" />
+            <input
+              type="text"
+              placeholder="Search grants..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-64 bg-[#161F32] border border-[#273155] rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 transition-all"
+            />
+          </div>
+          
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as GrantStatus | 'All')}
+            className="bg-[#161F32] border border-[#273155] rounded-xl px-4 py-2.5 text-sm text-[#F3F6FF] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+          >
+            <option value="All">All statuses</option>
+            <option value="not-started">Not started</option>
+            <option value="in-progress">In progress</option>
+            <option value="submitted">Submitted</option>
+            <option value="won">Won</option>
+          </select>
+          
+          <button 
+            onClick={() => {
+              setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+            }}
+            className="btn-secondary flex items-center gap-2"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {sortBy === 'deadline' ? 'Deadline' : sortBy === 'value' ? 'Value' : 'Fit'}
+            <ChevronDown className={`w-4 h-4 transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Bulk Actions Bar */}
+      {selectedGrants.size > 0 && (
+        <div className="flex items-center justify-between p-3 bg-[#4F46E5]/10 border border-[#4F46E5]/30 rounded-xl">
+          <div className="flex items-center gap-3">
+            <CheckSquare className="w-5 h-5 text-[#4F46E5]" />
+            <span className="text-[#F3F6FF] font-medium">{selectedGrants.size} selected</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => handleBulkAction('export')}
+              className="px-3 py-1.5 text-sm text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            <button 
+              onClick={() => handleBulkAction('archive')}
+              className="px-3 py-1.5 text-sm text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Archive className="w-4 h-4" />
+              Archive
+            </button>
+            <button 
+              onClick={() => setSelectedGrants(new Set())}
+              className="px-3 py-1.5 text-sm text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Table */}
+      <div ref={tableRef} className="card-dark overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-[#161F32] border-b border-[#273155]">
+              <th className="px-4 py-4 w-10">
+                <button 
+                  onClick={selectAll}
+                  className="text-[#A9B3D0] hover:text-[#F3F6FF] transition-colors"
+                >
+                  {selectedGrants.size === filteredGrants.length && filteredGrants.length > 0 ? (
+                    <CheckSquare className="w-5 h-5" />
+                  ) : (
+                    <Square className="w-5 h-5" />
+                  )}
+                </button>
+              </th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4">Program</th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4 cursor-pointer hover:text-[#F3F6FF]" onClick={() => setSortBy('deadline')}>
+                Deadline {sortBy === 'deadline' && '•'}
+              </th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4">Status</th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4 cursor-pointer hover:text-[#F3F6FF]" onClick={() => setSortBy('value')}>
+                Value {sortBy === 'value' && '•'}
+              </th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4 cursor-pointer hover:text-[#F3F6FF]" onClick={() => setSortBy('fit')}>
+                Fit {sortBy === 'fit' && '•'}
+              </th>
+              <th className="text-left text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4">Owner</th>
+              <th className="text-right text-[#A9B3D0] text-xs font-medium uppercase tracking-wider px-4 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredGrants.map((grant, index) => (
+              <tr 
+                key={grant.id} 
+                className={`grant-row border-b border-[#273155]/50 table-row-hover ${index % 2 === 1 ? 'bg-[#161F32]/30' : ''} ${selectedGrants.has(grant.id) ? 'bg-[#4F46E5]/10' : ''}`}
+              >
+                <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                  <button 
+                    onClick={() => toggleSelection(grant.id)}
+                    className="text-[#A9B3D0] hover:text-[#F3F6FF] transition-colors"
+                  >
+                    {selectedGrants.has(grant.id) ? (
+                      <CheckSquare className="w-5 h-5 text-[#4F46E5]" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${programColors[grant.program]}`}>
+                      {grant.program}
+                    </span>
+                    <span className="text-[#F3F6FF] font-medium">{grant.name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <span className="text-[#F3F6FF] mono">{grant.deadline}</span>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <span className={`status-badge ${statusConfig[grant.status].className}`}>
+                    {statusConfig[grant.status].label}
+                  </span>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <span className="text-[#F3F6FF] mono">{formatCurrency(grant.estimatedValue)}</span>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 h-2 bg-[#273155] rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#4F46E5] rounded-full transition-all duration-600"
+                        style={{ width: `${grant.fitScore}%` }}
+                      />
+                    </div>
+                    <span className="text-[#A9B3D0] text-sm mono">{grant.fitScore}%</span>
+                  </div>
+                </td>
+                <td className="px-4 py-4 cursor-pointer" onClick={() => handleGrantClick(grant.id)}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 bg-[#4F46E5]/20 rounded-full flex items-center justify-center border border-[#4F46E5]/30">
+                      <span className="text-[#4F46E5] text-xs font-medium">{grant.owner.name.charAt(0)}</span>
+                    </div>
+                    <span className="text-[#A9B3D0] text-sm">{grant.owner.name}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-4">
+                  <div className="flex items-center justify-end gap-1">
+                    <button 
+                      onClick={() => handleGrantClick(grant.id)}
+                      className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                      title="View"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => handleDuplicate(e, grant.id)}
+                      className="p-2 text-[#A9B3D0] hover:text-[#F3F6FF] hover:bg-[#161F32] rounded-lg transition-colors"
+                      title="Duplicate"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={(e) => handleDelete(e, grant.id)}
+                      className="p-2 text-[#A9B3D0] hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {filteredGrants.length === 0 && (
+          <div className="p-12 text-center">
+            <div className="w-16 h-16 bg-[#161F32] rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Search className="w-8 h-8 text-[#A9B3D0]" />
+            </div>
+            <p className="text-[#F3F6FF] font-medium mb-1">No grants found</p>
+            <p className="text-[#A9B3D0] text-sm">Try adjusting your filters or search query</p>
+          </div>
+        )}
+      </div>
+
+      {/* Summary */}
+      <div className="flex items-center justify-between text-sm">
+        <p className="text-[#A9B3D0]">
+          Showing <span className="text-[#F3F6FF] font-medium">{filteredGrants.length}</span> of <span className="text-[#F3F6FF] font-medium">{grants.length}</span> grants
+        </p>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#4F46E5]"></span>
+            <span className="text-[#A9B3D0]">In progress: {grants.filter(g => g.status === 'in-progress').length}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+            <span className="text-[#A9B3D0]">Won: {grants.filter(g => g.status === 'won').length}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+            <span className="text-[#A9B3D0]">Submitted: {grants.filter(g => g.status === 'submitted').length}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Grant Modal (simplified) */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#111827] border border-[#273155] rounded-2xl p-6 w-[500px] max-w-[90vw]">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-[#F3F6FF]">Add New Grant</h2>
+              <button 
+                onClick={() => setShowAddModal(false)}
+                className="text-[#A9B3D0] hover:text-[#F3F6FF]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[#A9B3D0] text-sm mb-2 block">Grant Name *</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter grant name..."
+                  value={newGrantName}
+                  onChange={(e) => setNewGrantName(e.target.value)}
+                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-[#A9B3D0] text-sm mb-2 block">Program *</label>
+                  <select 
+                    value={newGrantProgram}
+                    onChange={(e) => setNewGrantProgram(e.target.value as GrantProgram)}
+                    className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF]"
+                  >
+                    <option value="KPO">KPO</option>
+                    <option value="FEnIKS">FEnIKS</option>
+                    <option value="CEF">CEF</option>
+                    <option value="Horizon">Horizon</option>
+                    <option value="ERDF">ERDF</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[#A9B3D0] text-sm mb-2 block">Deadline *</label>
+                  <input 
+                    type="date" 
+                    value={newGrantDeadline}
+                    onChange={(e) => setNewGrantDeadline(e.target.value)}
+                    className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[#A9B3D0] text-sm mb-2 block">Estimated Value (€) *</label>
+                <input 
+                  type="number" 
+                  placeholder="1000000"
+                  value={newGrantValue}
+                  onChange={(e) => setNewGrantValue(e.target.value)}
+                  className="w-full bg-[#161F32] border border-[#273155] rounded-xl px-4 py-3 text-[#F3F6FF] placeholder:text-[#A9B3D0]/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button 
+                onClick={() => setShowAddModal(false)}
+                className="flex-1 btn-secondary"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSubmitNewGrant}
+                disabled={!newGrantName.trim() || !newGrantDeadline || !newGrantValue}
+                className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Grant
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
