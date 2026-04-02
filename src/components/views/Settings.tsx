@@ -232,7 +232,7 @@ export function Settings() {
                       type="text"
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     />
                   </div>
                   <div>
@@ -241,7 +241,7 @@ export function Settings() {
                       type="email"
                       value={profile.email}
                       onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     />
                   </div>
                   <div>
@@ -250,7 +250,7 @@ export function Settings() {
                       type="text"
                       value={profile.role}
                       onChange={(e) => setProfile({ ...profile, role: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     />
                   </div>
                   <div>
@@ -259,7 +259,7 @@ export function Settings() {
                       type="text"
                       value={profile.department}
                       onChange={(e) => setProfile({ ...profile, department: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     />
                   </div>
                   <div>
@@ -268,7 +268,7 @@ export function Settings() {
                       type="tel"
                       value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     />
                   </div>
                   <div>
@@ -276,7 +276,7 @@ export function Settings() {
                     <select
                       value={profile.timezone}
                       onChange={(e) => setProfile({ ...profile, timezone: e.target.value })}
-                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                     >
                       <option value="Europe/Warsaw">Europe/Warsaw (GMT+1)</option>
                       <option value="Europe/Berlin">Europe/Berlin (GMT+1)</option>
@@ -311,7 +311,7 @@ export function Settings() {
                             type="checkbox"
                             checked={notifications[item.key as keyof typeof notifications]}
                             onChange={(e) => setNotifications({ ...notifications, [item.key]: e.target.checked })}
-                            className="mt-1 w-4 h-4 rounded border-theme text-accent focus:ring-[#4F46E5] bg-[#0B0F1C]"
+                            className="mt-1 w-4 h-4 rounded border-theme text-accent focus:ring-accent bg-checkbox"
                           />
                           <div className="flex-1">
                             <p className="text-primary text-sm font-medium">{item.label}</p>
@@ -324,7 +324,7 @@ export function Settings() {
 
                   <div className="pt-6 border-t border-theme">
                     <h3 className="text-primary font-medium mb-4 flex items-center gap-2">
-                      <Smartphone className="w-4 h-4 text-[#22C55E]" />
+                      <Smartphone className="w-4 h-4 text-success" />
                       Push Notifications
                     </h3>
                     <div className="space-y-3">
@@ -337,7 +337,7 @@ export function Settings() {
                             type="checkbox"
                             checked={notifications[item.key as keyof typeof notifications]}
                             onChange={(e) => setNotifications({ ...notifications, [item.key]: e.target.checked })}
-                            className="mt-1 w-4 h-4 rounded border-theme text-accent focus:ring-[#4F46E5] bg-[#0B0F1C]"
+                            className="mt-1 w-4 h-4 rounded border-theme text-accent focus:ring-accent bg-checkbox"
                           />
                           <div className="flex-1">
                             <p className="text-primary text-sm font-medium">{item.label}</p>
@@ -369,7 +369,7 @@ export function Settings() {
                           <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Enter current password"
-                            className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                            className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                           />
                           <button
                             onClick={() => setShowPassword(!showPassword)}
@@ -384,7 +384,7 @@ export function Settings() {
                         <input
                           type="password"
                           placeholder="Enter new password"
-                          className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                          className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                         />
                       </div>
                       <div>
@@ -392,7 +392,7 @@ export function Settings() {
                         <input
                           type="password"
                           placeholder="Confirm new password"
-                          className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                          className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                         />
                       </div>
                     </div>
@@ -412,7 +412,7 @@ export function Settings() {
                       {twoFAEnabled ? (
                         <button 
                           onClick={handle2FADisable}
-                          className="px-4 py-2 bg-[#EF4444]/15 text-[#EF4444] hover:bg-[#EF4444]/25 rounded-xl transition-colors"
+                          className="px-4 py-2 bg-danger/15 text-danger hover:bg-danger/25 rounded-xl transition-colors"
                         >
                           Disable
                         </button>
@@ -432,7 +432,7 @@ export function Settings() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-4 bg-tertiary rounded-xl">
                         <div className="flex items-center gap-3">
-                          <div className="w-2 h-2 bg-[#22C55E] rounded-full" />
+                          <div className="w-2 h-2 bg-success rounded-full" />
                           <div>
                             <p className="text-primary text-sm">Chrome on macOS</p>
                             <p className="text-secondary text-xs">Warsaw, Poland • Current session</p>
@@ -458,7 +458,7 @@ export function Settings() {
                       <select
                         value={preferences.language}
                         onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                       >
                         <option value="en">English</option>
                         <option value="pl">Polski</option>
@@ -471,7 +471,7 @@ export function Settings() {
                       <select
                         value={preferences.currency}
                         onChange={(e) => setPreferences({ ...preferences, currency: e.target.value })}
-                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                       >
                         <option value="EUR">EUR (€)</option>
                         <option value="USD">USD ($)</option>
@@ -484,7 +484,7 @@ export function Settings() {
                       <select
                         value={preferences.dateFormat}
                         onChange={(e) => setPreferences({ ...preferences, dateFormat: e.target.value })}
-                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                        className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                       >
                         <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                         <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -534,7 +534,7 @@ export function Settings() {
                         <p className="text-primary font-medium">Compact Mode</p>
                         <p className="text-secondary text-sm">Reduce spacing for more content</p>
                       </div>
-                      <div className={`w-12 h-6 rounded-full transition-colors ${preferences.compactMode ? 'bg-accent' : 'bg-[#273155]'} relative`}>
+                      <div className={`w-12 h-6 rounded-full transition-colors ${preferences.compactMode ? 'bg-accent' : 'bg-border'} relative`}>
                         <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${preferences.compactMode ? 'translate-x-6' : 'translate-x-0.5'}`} />
                       </div>
                     </label>
@@ -591,14 +591,14 @@ export function Settings() {
                       <AlertTriangle className="w-4 h-4" />
                       Danger Zone
                     </h3>
-                    <div className="p-4 bg-[#EF4444]/10 border border-[#EF4444]/30 rounded-xl">
+                    <div className="p-4 bg-danger/10 border border-[#EF4444]/30 rounded-xl">
                       <p className="text-primary font-medium mb-1">Delete Account</p>
                       <p className="text-secondary text-sm mb-4">
                         This will permanently delete your account and all associated data.
                       </p>
                       <button 
                         onClick={handleDeleteAccount}
-                        className="px-4 py-2 bg-[#EF4444]/20 hover:bg-[#EF4444]/30 text-[#EF4444] rounded-lg transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-danger/20 hover:bg-danger/30 text-[#EF4444] rounded-lg transition-colors flex items-center gap-2"
                       >
                         <Trash2 className="w-4 h-4" />
                         Delete Account
@@ -663,7 +663,7 @@ export function Settings() {
                   onChange={(e) => setTwoFACode(e.target.value)}
                   placeholder="Enter 6-digit code"
                   maxLength={6}
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50 text-center text-2xl tracking-widest"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50 text-center text-2xl tracking-widest"
                 />
                 <p className="text-secondary text-xs mt-2 text-center">Demo: enter "123456" to enable</p>
               </div>

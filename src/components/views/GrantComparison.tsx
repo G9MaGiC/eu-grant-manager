@@ -85,17 +85,17 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-[#22C55E]';
+    if (score >= 90) return 'text-success';
     if (score >= 80) return 'text-accent';
-    if (score >= 70) return 'text-[#F59E0B]';
-    return 'text-[#EF4444]';
+    if (score >= 70) return 'text-warning';
+    return 'text-danger';
   };
 
   const getScoreBg = (score: number) => {
-    if (score >= 90) return 'bg-[#22C55E]/15';
+    if (score >= 90) return 'bg-success/15';
     if (score >= 80) return 'bg-accent/15';
-    if (score >= 70) return 'bg-[#F59E0B]/15';
-    return 'bg-[#EF4444]/15';
+    if (score >= 70) return 'bg-warning/15';
+    return 'bg-danger/15';
   };
 
   return (
@@ -104,7 +104,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent to-purple-600 rounded-xl flex items-center justify-center">
               <Scale className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                         </span>
                         <button 
                           onClick={() => removeGrant(grant.id)}
-                          className="text-secondary hover:text-[#EF4444] transition-colors"
+                          className="text-secondary hover:text-danger transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -217,9 +217,9 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                   return (
                     <td key={grant.id} className="p-4">
                       <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-                        days <= 7 ? 'bg-[#EF4444]/15 text-[#EF4444]' :
-                        days <= 14 ? 'bg-[#F59E0B]/15 text-[#F59E0B]' :
-                        'bg-[#22C55E]/15 text-[#22C55E]'
+                        days <= 7 ? 'bg-danger/15 text-danger' :
+                        days <= 14 ? 'bg-warning/15 text-warning' :
+                        'bg-success/15 text-success'
                       }`}>
                         <span className="font-medium">{days} days</span>
                       </div>
@@ -240,8 +240,8 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                 {selectedGrants.map(grant => (
                   <td key={grant.id} className="p-4">
                     <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-                      grant.status === 'won' ? 'bg-[#22C55E]/15 text-[#22C55E]' :
-                      grant.status === 'submitted' ? 'bg-[#F59E0B]/15 text-[#F59E0B]' :
+                      grant.status === 'won' ? 'bg-success/15 text-success' :
+                      grant.status === 'submitted' ? 'bg-warning/15 text-warning' :
                       grant.status === 'in-progress' ? 'bg-accent/15 text-accent' :
                       'bg-tertiary text-secondary'
                     }`}>
@@ -254,7 +254,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
               {/* Pros */}
               <tr className="border-b border-theme">
                 <td className="p-4 align-top">
-                  <div className="flex items-center gap-2 text-[#22C55E]">
+                  <div className="flex items-center gap-2 text-success">
                     <Check className="w-4 h-4" />
                     <span className="text-sm font-medium">Pros</span>
                   </div>
@@ -264,7 +264,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                     <ul className="space-y-2">
                       {grant.pros.map((pro, i) => (
                         <li key={i} className="flex items-start gap-2 text-primary text-sm">
-                          <Check className="w-4 h-4 text-[#22C55E] flex-shrink-0 mt-0.5" />
+                          <Check className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
                           <span>{pro}</span>
                         </li>
                       ))}
@@ -276,7 +276,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
               {/* Cons */}
               <tr className="border-b border-theme">
                 <td className="p-4 align-top">
-                  <div className="flex items-center gap-2 text-[#EF4444]">
+                  <div className="flex items-center gap-2 text-danger">
                     <X className="w-4 h-4" />
                     <span className="text-sm font-medium">Cons</span>
                   </div>
@@ -286,7 +286,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                     <ul className="space-y-2">
                       {grant.cons.map((con, i) => (
                         <li key={i} className="flex items-start gap-2 text-primary text-sm">
-                          <X className="w-4 h-4 text-[#EF4444] flex-shrink-0 mt-0.5" />
+                          <X className="w-4 h-4 text-danger flex-shrink-0 mt-0.5" />
                           <span>{con}</span>
                         </li>
                       ))}

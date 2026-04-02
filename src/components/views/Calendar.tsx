@@ -153,8 +153,8 @@ export function Calendar({ onViewChange }: CalendarProps) {
           key={day}
           onClick={() => setSelectedDate(date)}
           className={`h-28 p-2 border border-theme/50 cursor-pointer transition-colors ${
-            isSelected ? 'bg-accent/10 border-[#4F46E5]' :
-            isToday ? 'bg-accent/5 border-[#4F46E5]/50' :
+            isSelected ? 'bg-accent/10 border-accent' :
+            isToday ? 'bg-accent/5 border-accent/50' :
             isWeekend ? 'bg-tertiary/30' : 'bg-tertiary/10 hover:bg-tertiary/50'
           }`}
         >
@@ -179,7 +179,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 }}
                 className={`px-2 py-1 rounded text-xs truncate cursor-pointer ${
                   grant.deadline === dateStr
-                    ? 'bg-[#EF4444]/20 text-[#EF4444] hover:bg-[#EF4444]/30'
+                    ? 'bg-danger/20 text-danger hover:bg-[#EF4444]/30'
                     : 'bg-accent/20 text-accent hover:bg-accent/30'
                 }`}
               >
@@ -294,7 +294,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-px bg-[#273155]/30 rounded-xl overflow-hidden">
+            <div className="grid grid-cols-7 gap-px bg-border/30 rounded-xl overflow-hidden">
               {renderCalendarDays()}
             </div>
 
@@ -353,7 +353,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
           <div className="card-dark p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-primary font-semibold">Upcoming Deadlines</h3>
-              <span className="px-2 py-0.5 bg-[#EF4444]/15 text-[#EF4444] text-xs rounded-full">
+              <span className="px-2 py-0.5 bg-danger/15 text-danger text-xs rounded-full">
                 {upcomingDeadlines.length}
               </span>
             </div>
@@ -368,11 +368,11 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       daysLeft <= 3 ? 'bg-[#EF4444]/15' : 
-                      daysLeft <= 7 ? 'bg-[#F59E0B]/15' : 'bg-accent/15'
+                      daysLeft <= 7 ? 'bg-warning/15' : 'bg-accent/15'
                     }`}>
                       <CalendarIcon className={`w-5 h-5 ${
-                        daysLeft <= 3 ? 'text-[#EF4444]' : 
-                        daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-accent'
+                        daysLeft <= 3 ? 'text-danger' : 
+                        daysLeft <= 7 ? 'text-warning' : 'text-accent'
                       }`} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -380,8 +380,8 @@ export function Calendar({ onViewChange }: CalendarProps) {
                       <p className="text-secondary text-xs">{grant.deadline}</p>
                     </div>
                     <span className={`text-xs ${
-                      daysLeft <= 3 ? 'text-[#EF4444]' : 
-                      daysLeft <= 7 ? 'text-[#F59E0B]' : 'text-secondary'
+                      daysLeft <= 3 ? 'text-danger' : 
+                      daysLeft <= 7 ? 'text-warning' : 'text-secondary'
                     }`}>
                       {daysLeft}d
                     </span>
@@ -438,7 +438,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   value={newEventTitle}
                   onChange={(e) => setNewEventTitle(e.target.value)}
                   placeholder="e.g., Team Meeting"
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
                 />
               </div>
               <div>
@@ -447,7 +447,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   type="date"
                   value={newEventDate}
                   onChange={(e) => setNewEventDate(e.target.value)}
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                 />
               </div>
               <div>
@@ -455,7 +455,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 <select
                   value={newEventType}
                   onChange={(e) => setNewEventType(e.target.value as 'deadline' | 'meeting' | 'reminder')}
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                 >
                   <option value="meeting">Meeting</option>
                   <option value="deadline">Deadline</option>

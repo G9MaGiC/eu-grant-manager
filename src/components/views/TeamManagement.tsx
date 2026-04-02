@@ -39,7 +39,7 @@ const mockTeam: TeamMember[] = [
 
 const roleConfig = {
   admin: { label: 'Administrator', color: 'text-accent', bgColor: 'bg-accent/15', icon: Crown },
-  manager: { label: 'Manager', color: 'text-[#22C55E]', bgColor: 'bg-[#22C55E]/15', icon: Shield },
+  manager: { label: 'Manager', color: 'text-success', bgColor: 'bg-success/15', icon: Shield },
   member: { label: 'Member', color: 'text-secondary', bgColor: 'bg-tertiary', icon: User },
 };
 
@@ -126,7 +126,7 @@ export function TeamManagement() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-accent to-purple-600 rounded-xl flex items-center justify-center">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -170,8 +170,8 @@ export function TeamManagement() {
         </div>
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#F59E0B]/15 rounded-xl flex items-center justify-center">
-              <Clock className="w-6 h-6 text-[#F59E0B]" />
+            <div className="w-12 h-12 bg-warning/15 rounded-xl flex items-center justify-center">
+              <Clock className="w-6 h-6 text-warning" />
             </div>
             <div>
               <p className="text-secondary text-sm">Pending</p>
@@ -181,8 +181,8 @@ export function TeamManagement() {
         </div>
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#8B5CF6]/15 rounded-xl flex items-center justify-center">
-              <Shield className="w-6 h-6 text-[#8B5CF6]" />
+            <div className="w-12 h-12 bg-accent/15 rounded-xl flex items-center justify-center">
+              <Shield className="w-6 h-6 text-accent" />
             </div>
             <div>
               <p className="text-secondary text-sm">Admins</p>
@@ -201,7 +201,7 @@ export function TeamManagement() {
             placeholder="Search team members..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2.5 text-sm text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+            className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-2.5 text-sm text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
           />
         </div>
         <button className="btn-secondary flex items-center gap-2">
@@ -234,7 +234,7 @@ export function TeamManagement() {
                 >
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] rounded-full flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-br from-accent to-purple-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm font-medium">
                           {member.name.split(' ').map(n => n[0]).join('')}
                         </span>
@@ -258,7 +258,7 @@ export function TeamManagement() {
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                       member.status === 'active' ? 'bg-[#22C55E]/15 text-[#22C55E]' :
                       member.status === 'pending' ? 'bg-[#F59E0B]/15 text-[#F59E0B]' :
-                      'bg-[#EF4444]/15 text-[#EF4444]'
+                      'bg-danger/15 text-danger'
                     }`}>
                       <div className={`w-1.5 h-1.5 rounded-full ${
                         member.status === 'active' ? 'bg-[#22C55E]' :
@@ -281,7 +281,7 @@ export function TeamManagement() {
                       </button>
                       <button 
                         onClick={() => handleRemove(member.id)}
-                        className="p-2 text-secondary hover:text-[#EF4444] hover:bg-[#EF4444]/10 rounded-lg transition-colors"
+                        className="p-2 text-secondary hover:text-danger hover:bg-danger/10 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -323,7 +323,7 @@ export function TeamManagement() {
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="colleague@example.com"
-                    className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                    className="w-full bg-tertiary border border-theme rounded-xl pl-9 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
                   />
                 </div>
               </div>
@@ -332,7 +332,7 @@ export function TeamManagement() {
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as TeamMember['role'])}
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                 >
                   <option value="member">Member - Can view and edit assigned grants</option>
                   <option value="manager">Manager - Can manage grants and team members</option>
@@ -379,7 +379,7 @@ export function TeamManagement() {
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   placeholder="Full name"
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
                 />
               </div>
               <div>
@@ -389,7 +389,7 @@ export function TeamManagement() {
                   value={editDepartment}
                   onChange={(e) => setEditDepartment(e.target.value)}
                   placeholder="e.g., Finance, Legal"
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
                 />
               </div>
               <div>
@@ -397,7 +397,7 @@ export function TeamManagement() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as TeamMember['role'])}
-                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                  className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary focus:outline-none focus:ring-2 focus:ring-accent/50"
                 >
                   <option value="member">Member - Can view and edit assigned grants</option>
                   <option value="manager">Manager - Can manage grants and team members</option>

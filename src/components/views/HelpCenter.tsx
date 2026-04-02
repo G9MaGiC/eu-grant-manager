@@ -78,7 +78,7 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for help..."
-              className="w-full bg-tertiary border border-theme rounded-xl pl-12 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+              className="w-full bg-tertiary border border-theme rounded-xl pl-12 pr-4 py-3 text-primary placeholder:text-secondary/60 focus:outline-none focus:ring-2 focus:ring-accent/50"
             />
           </div>
         </div>
@@ -138,13 +138,13 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* Contact Support */}
-          <div className="p-4 bg-accent/10 border border-[#4F46E5]/30 rounded-xl">
+          <div className="p-4 bg-accent/10 border border-accent/30 rounded-xl">
             <h3 className="text-primary font-semibold mb-2">Need more help?</h3>
             <p className="text-secondary text-sm mb-4">Our support team is here to assist you.</p>
             <div className="flex gap-3">
               <button 
                 onClick={() => toast.success('Support email copied: support@eugrantmanager.eu')}
-                className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-[#4338CA] rounded-lg text-white text-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover rounded-lg text-white text-sm transition-colors"
               >
                 <Mail className="w-4 h-4" />
                 Email Support

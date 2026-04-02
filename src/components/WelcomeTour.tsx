@@ -13,7 +13,7 @@ const tourSteps = [
     title: 'Welcome to EU Grant Manager',
     description: 'Your all-in-one platform for finding, applying, and winning EU funding. Let\'s take a quick tour of the key features.',
     icon: Sparkles,
-    color: 'from-[#4F46E5] to-[#7C3AED]',
+    color: 'from-accent to-purple-600',
   },
   {
     id: 'dashboard',
@@ -152,9 +152,9 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="tour-modal bg-[#111827] border border-[#273155] rounded-2xl w-[500px] max-w-[90vw] overflow-hidden shadow-2xl">
+      <div className="tour-modal bg-secondary border border-border rounded-2xl w-[500px] max-w-[90vw] overflow-hidden shadow-2xl">
         {/* Progress bar */}
-        <div className="h-1 bg-[#161F32]">
+        <div className="h-1 bg-tertiary">
           <div 
             className="h-full bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -169,7 +169,7 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
             </div>
             <button 
               onClick={handleSkip}
-              className="text-[#A9B3D0] hover:text-[#F3F6FF] p-2 hover:bg-[#161F32] rounded-lg transition-colors"
+              className="text-secondary hover:text-primary p-2 hover:bg-tertiary rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -177,13 +177,13 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
 
           {/* Content */}
           <div className="tour-content">
-            <span className="text-[#4F46E5] text-sm font-medium mb-2 block">
+            <span className="text-accent text-sm font-medium mb-2 block">
               Step {currentStep + 1} of {tourSteps.length}
             </span>
-            <h2 className="text-2xl font-semibold text-[#F3F6FF] mb-3">
+            <h2 className="text-2xl font-semibold text-primary mb-3">
               {step.title}
             </h2>
-            <p className="text-[#A9B3D0] leading-relaxed mb-8">
+            <p className="text-secondary leading-relaxed mb-8">
               {step.description}
             </p>
           </div>
@@ -193,7 +193,7 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
             <button
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="flex items-center gap-2 px-4 py-2 text-[#A9B3D0] hover:text-[#F3F6FF] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-secondary hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               Back
@@ -204,7 +204,7 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
                 <div
                   key={i}
                   className={`w-2 h-2 rounded-full transition-colors ${
-                    i === currentStep ? 'bg-[#4F46E5]' : 'bg-[#273155]'
+                    i === currentStep ? 'bg-accent' : 'bg-[#273155]'
                   }`}
                 />
               ))}
@@ -212,7 +212,7 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
 
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-6 py-2.5 bg-[#4F46E5] hover:bg-[#4338CA] text-white rounded-xl font-medium transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 bg-[#4F46E5] hover:bg-accent-hover text-white rounded-xl font-medium transition-colors"
             >
               {currentStep === tourSteps.length - 1 ? 'Get Started' : 'Next'}
               <ChevronRight className="w-4 h-4" />
@@ -224,7 +224,7 @@ export function WelcomeTour({ onClose }: WelcomeTourProps) {
         <div className="px-8 pb-4 text-center">
           <button 
             onClick={handleSkip}
-            className="text-[#A9B3D0] hover:text-[#F3F6FF] text-sm transition-colors"
+            className="text-secondary hover:text-primary text-sm transition-colors"
           >
             Skip tour
           </button>
