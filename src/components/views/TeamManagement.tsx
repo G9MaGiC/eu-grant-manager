@@ -145,7 +145,7 @@ export function TeamManagement() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-accent/15 rounded-xl flex items-center justify-center">

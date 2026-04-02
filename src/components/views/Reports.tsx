@@ -189,7 +189,7 @@ export function Reports() {
       </div>
 
       {/* Export Cards */}
-      <div ref={cardsRef} className="grid grid-cols-3 gap-5">
+      <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {exportCards.map((card) => {
           const Icon = card.icon;
           const isExported = exportedFiles.some(f => f.includes(card.format));
@@ -244,7 +244,7 @@ export function Reports() {
       </div>
 
       {/* Analytics Section */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Program Distribution */}
         <div className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
@@ -412,7 +412,7 @@ export function Reports() {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="card-dark p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#22C55E]/15 rounded-lg flex items-center justify-center">

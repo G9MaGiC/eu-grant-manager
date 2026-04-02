@@ -57,10 +57,17 @@ function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1.2 }: { v
   );
 }
 
-function MiniChart({ data, color = '#4F46E5' }: { data: number[]; color?: string }) {
+function MiniChart({ data, color = 'accent' }: { data: number[]; color?: 'accent' | 'success' | 'warning' | 'danger' }) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
+  
+  const colorClasses = {
+    accent: 'bg-accent',
+    success: 'bg-success',
+    warning: 'bg-warning',
+    danger: 'bg-danger',
+  };
   
   return (
     <div className="flex items-end gap-1 h-10">
@@ -69,10 +76,9 @@ function MiniChart({ data, color = '#4F46E5' }: { data: number[]; color?: string
         return (
           <div
             key={i}
-            className="w-2 rounded-t transition-all duration-300"
+            className={`w-2 rounded-t transition-all duration-300 ${colorClasses[color]}`}
             style={{ 
-              height: `${Math.max(height, 10)}%`, 
-              backgroundColor: color,
+              height: `${Math.max(height, 10)}%`,
               opacity: 0.6 + (i / data.length) * 0.4
             }}
           />
@@ -196,7 +202,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
       </div>
 
       {/* Stats Row */}
-      <div ref={statsRef} className="grid grid-cols-3 gap-5">
+      <div ref={statsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -211,7 +217,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
               <TrendingUp className="w-6 h-6 text-accent" />
             </div>
           </div>
-          <MiniChart data={[8, 9, 10, 11, 11, 12]} color="#4F46E5" />
+          <MiniChart data={[8, 9, 10, 11, 11, 12]} color="accent" />
         </div>
 
         <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
@@ -224,11 +230,11 @@ export function Dashboard({ onViewChange }: DashboardProps) {
                 <span>+€850K from last month</span>
               </div>
             </div>
-            <div className="w-12 h-12 bg-[#22C55E]/15 rounded-xl flex items-center justify-center group-hover:bg-[#22C55E]/25 transition-colors">
-              <Euro className="w-6 h-6 text-green-500" />
+            <div className="w-12 h-12 bg-success/15 rounded-xl flex items-center justify-center group-hover:bg-success/25 transition-colors">
+              <Euro className="w-6 h-6 text-success" />
             </div>
           </div>
-          <MiniChart data={pipelineData} color="#22C55E" />
+          <MiniChart data={pipelineData} color="success" />
         </div>
 
         <div className="stat-card card-dark p-5 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer group">
@@ -241,22 +247,22 @@ export function Dashboard({ onViewChange }: DashboardProps) {
                 <span>Target: 5</span>
               </div>
             </div>
-            <div className="w-12 h-12 bg-[#F59E0B]/15 rounded-xl flex items-center justify-center group-hover:bg-[#F59E0B]/25 transition-colors">
-              <FileCheck className="w-6 h-6 text-amber-500" />
+            <div className="w-12 h-12 bg-warning/15 rounded-xl flex items-center justify-center group-hover:bg-warning/25 transition-colors">
+              <FileCheck className="w-6 h-6 text-warning" />
             </div>
           </div>
-          <MiniChart data={submissionsData} color="#F59E0B" />
+          <MiniChart data={submissionsData} color="warning" />
         </div>
       </div>
 
       {/* Middle Row */}
-      <div className="grid grid-cols-5 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
         {/* Upcoming Deadlines */}
-        <div ref={deadlinesRef} className="col-span-3 card-dark p-5">
+        <div ref={deadlinesRef} className="lg:col-span-3 card-dark p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <h2 className="text-lg font-semibold text-primary">Upcoming deadlines</h2>
-              <span className="px-2 py-0.5 bg-[#EF4444]/15 text-red-500 text-xs rounded-full">
+              <span className="px-2 py-0.5 bg-danger/15 text-danger text-xs rounded-full">
                 {upcomingDeadlines.filter(d => d.daysLeft <= 7).length} urgent
               </span>
             </div>
@@ -306,7 +312,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
         </div>
 
         {/* Quick Actions */}
-        <div ref={actionsRef} className="col-span-2 card-dark p-5">
+        <div ref={actionsRef} className="lg:col-span-2 card-dark p-5">
           <h2 className="text-lg font-semibold text-primary mb-4">Quick actions</h2>
           <div className="space-y-3">
             <button 
@@ -355,8 +361,8 @@ export function Dashboard({ onViewChange }: DashboardProps) {
               onClick={() => handleQuickAction('report')}
               className="action-btn w-full flex items-center gap-3 p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
             >
-              <div className="w-10 h-10 bg-[#8B5CF6]/15 rounded-lg flex items-center justify-center group-hover:bg-[#8B5CF6]/25 transition-colors">
-                <BarChart3 className="w-5 h-5 text-[#8B5CF6]" />
+              <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center group-hover:bg-accent/25 transition-colors">
+                <BarChart3 className="w-5 h-5 text-accent" />
               </div>
               <div className="text-left flex-1">
                 <p className="text-primary font-medium">Generate report</p>
@@ -369,7 +375,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
       </div>
 
       {/* Bottom Row */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Recent Activity */}
         <div ref={recentRef} className="card-dark p-5">
           <div className="flex items-center justify-between mb-4">
@@ -380,10 +386,10 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           </div>
           <div className="space-y-3">
             {[
-              { action: 'Document uploaded', item: 'Budget_Template.xlsx', grant: 'KPO Energy Retrofit', time: '2 hours ago', icon: Upload, color: 'text-amber-500' },
-              { action: 'Application submitted', item: 'CEF Transport Corridor', grant: 'Submitted to portal', time: 'Yesterday', icon: CheckCircle2, color: 'text-green-500' },
+              { action: 'Document uploaded', item: 'Budget_Template.xlsx', grant: 'KPO Energy Retrofit', time: '2 hours ago', icon: Upload, color: 'text-warning' },
+              { action: 'Application submitted', item: 'CEF Transport Corridor', grant: 'Submitted to portal', time: 'Yesterday', icon: CheckCircle2, color: 'text-success' },
               { action: 'Task completed', item: 'Draft project narrative', grant: 'FEnIKS Digital Services', time: '2 days ago', icon: FileCheck, color: 'text-accent' },
-              { action: 'Grant added', item: 'Smart City Data Platform', grant: 'KPO Program', time: '3 days ago', icon: Plus, color: 'text-[#8B5CF6]' },
+              { action: 'Grant added', item: 'Smart City Data Platform', grant: 'KPO Program', time: '3 days ago', icon: Plus, color: 'text-accent' },
             ].map((activity, i) => (
               <div key={i} className="recent-item flex items-center gap-4 p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer">
                 <div className={`w-9 h-9 bg-tertiary rounded-lg flex items-center justify-center`}>

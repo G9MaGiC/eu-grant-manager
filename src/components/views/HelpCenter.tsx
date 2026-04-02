@@ -88,7 +88,7 @@ export function HelpCenter({ onClose }: { onClose: () => void }) {
           {/* Quick Guides */}
           <div>
             <h3 className="text-primary font-semibold mb-4">Quick Guides</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {guides.map((guide, i) => (
                 <button
                   key={i}

@@ -164,7 +164,7 @@ export function Settings() {
         <p className="text-secondary mt-1">Manage your account and application preferences</p>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Sidebar */}
         <div className="col-span-3">
           <div className="card-dark p-2 sticky top-4">
@@ -225,7 +225,7 @@ export function Settings() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-secondary text-sm mb-2 block">Full Name</label>
                     <input
@@ -452,7 +452,7 @@ export function Settings() {
                 <h2 className="text-lg font-semibold text-primary mb-6">Application Preferences</h2>
                 
                 <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-secondary text-sm mb-2 block">Language</label>
                       <select

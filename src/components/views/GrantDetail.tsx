@@ -252,7 +252,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div className="p-3 bg-tertiary rounded-xl">
                 <div className="flex items-center gap-2 text-secondary text-sm mb-1">
                   <Calendar className="w-4 h-4" />

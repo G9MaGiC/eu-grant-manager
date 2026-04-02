@@ -132,9 +132,9 @@ export function BudgetCalculator() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Calculator */}
-        <div className="col-span-8">
+        <div className="lg:col-span-8">
           <div className="card-dark p-6">
             {/* Grant Name */}
             <div className="mb-6">
@@ -143,7 +143,7 @@ export function BudgetCalculator() {
                 type="text"
                 value={grantName}
                 onChange={(e) => setGrantName(e.target.value)}
-                className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary text-lg font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                className="w-full bg-tertiary border border-theme rounded-xl px-4 py-3 text-primary text-lg font-medium focus:outline-none focus:ring-2 focus:ring-accent/50"
               />
             </div>
 
@@ -162,7 +162,7 @@ export function BudgetCalculator() {
                     <select
                       value={item.category}
                       onChange={(e) => updateItem(item.id, 'category', e.target.value)}
-                      className="w-full bg-tertiary border border-theme rounded-lg px-3 py-2 text-primary text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/50"
+                      className="w-full bg-tertiary border border-theme rounded-lg px-3 py-2 text-primary text-sm focus:outline-none focus:ring-2 focus:ring-accent/50"
                     >
                       {defaultCategories.map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
@@ -237,7 +237,7 @@ export function BudgetCalculator() {
         </div>
 
         {/* Summary Sidebar */}
-        <div className="col-span-4 space-y-5">
+        <div className="lg:col-span-4 space-y-5">
           {/* Total Summary */}
           <div className="card-dark p-5">
             <h3 className="text-primary font-semibold mb-4 flex items-center gap-2">

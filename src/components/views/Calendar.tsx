@@ -231,9 +231,9 @@ export function Calendar({ onViewChange }: CalendarProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Calendar */}
-        <div className="col-span-9">
+        <div className="lg:col-span-9">
           <div className="card-dark p-6">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
@@ -317,7 +317,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
         </div>
 
         {/* Sidebar */}
-        <div className="col-span-3 space-y-5">
+        <div className="lg:col-span-3 space-y-5">
           {/* Selected Date Events */}
           {selectedDate && (
             <div className="card-dark p-5">
