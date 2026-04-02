@@ -12,7 +12,7 @@ import {
   Target,
   Download
 } from 'lucide-react';
-import { grants } from '@/data/mockData';
+import { useGrants } from '@/hooks/useGrants';
 import type { ViewType } from '@/types';
 import { toast } from 'sonner';
 
@@ -28,26 +28,34 @@ interface ComparisonGrant {
   cons: string[];
 }
 
-const comparisonData: ComparisonGrant[] = grants.slice(0, 3).map(g => ({
-  ...g,
-  pros: [
-    'High fit score with municipality priorities',
-    'Strong track record in similar programs',
-    'Adequate timeline for preparation',
-  ],
-  cons: [
-    'Complex application requirements',
-    'High competition expected',
-  ],
-}));
+
 
 interface GrantComparisonProps {
   onViewChange: (view: ViewType, grantId?: string) => void;
 }
 
 export function GrantComparison({ onViewChange }: GrantComparisonProps) {
-  const [selectedGrants, setSelectedGrants] = useState<ComparisonGrant[]>(comparisonData);
+  const { grants, loading } = useGrants();
+  const [selectedGrants, setSelectedGrants] = useState<ComparisonGrant[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    if (grants.length > 0 && selectedGrants.length === 0) {
+      const comparisonData: ComparisonGrant[] = grants.slice(0, 3).map(g => ({
+        ...g,
+        pros: [
+          'High fit score with municipality priorities',
+          'Strong track record in similar programs',
+          'Adequate timeline for preparation',
+        ],
+        cons: [
+          'Complex application requirements',
+          'High competition expected',
+        ],
+      }));
+      setSelectedGrants(comparisonData);
+    }
+  }, [grants]);
 
   useEffect(() => {
     gsap.fromTo('.comparison-card',
@@ -97,6 +105,14 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
     if (score >= 70) return 'bg-warning/15';
     return 'bg-danger/15';
   };
+
+  if (loading) {
+    return (
+      <div className="p-7 flex items-center justify-center h-64">
+        <div className="text-secondary">Loading grants...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-7">

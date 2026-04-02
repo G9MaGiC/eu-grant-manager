@@ -9,7 +9,7 @@ import {
   Download,
   X
 } from 'lucide-react';
-import { grants } from '@/data/mockData';
+import { useGrants } from '@/hooks/useGrants';
 import type { ViewType } from '@/types';
 import { toast } from 'sonner';
 
@@ -29,6 +29,7 @@ interface CalendarEvent {
 }
 
 export function Calendar({ onViewChange }: CalendarProps) {
+  const { grants, loading } = useGrants();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [view, setView] = useState<'month' | 'week'>('month');
@@ -204,6 +205,16 @@ export function Calendar({ onViewChange }: CalendarProps) {
     .filter(g => new Date(g.deadline) >= new Date())
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
     .slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="p-7 calendar-content">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-secondary">Loading calendar...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-7 calendar-content">

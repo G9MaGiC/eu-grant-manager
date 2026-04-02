@@ -24,7 +24,7 @@ import {
   Link,
   Copy
 } from 'lucide-react';
-import { submissions, grants } from '@/data/mockData';
+import { useGrants } from '@/hooks/useGrants';
 import { toast } from 'sonner';
 
 interface ExportCard {
@@ -92,6 +92,8 @@ export function Reports() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareEmail, setShareEmail] = useState('');
   const [shareLink, setShareLink] = useState('');
+  const { grants, loading } = useGrants();
+  const submissions = grants.filter(g => g.status === 'submitted');
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -157,6 +159,17 @@ export function Reports() {
     const grant = grants.find(g => g.id === grantId);
     return grant?.status || 'unknown';
   };
+
+  if (loading) {
+    return (
+      <div className="p-7 flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-3 text-secondary">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading reports...</span>
+        </div>
+      </div>
+    );
+  }
 
   const totalWon = grants.filter(g => g.status === 'won').length;
   const totalSubmitted = grants.filter(g => g.status === 'submitted').length;
@@ -352,7 +365,7 @@ export function Reports() {
             </thead>
             <tbody>
               {submissions.map((submission, index) => {
-                const status = getGrantStatus(submission.grantId);
+                const status = submission.status;
                 return (
                   <tr 
                     key={submission.id}
@@ -363,11 +376,11 @@ export function Reports() {
                         <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center">
                           <FileText className="w-5 h-5 text-accent" />
                         </div>
-                        <span className="text-primary font-medium">{submission.grantName}</span>
+                        <span className="text-primary font-medium">{submission.title}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-primary mono">{submission.submittedAt}</span>
+                      <span className="text-primary mono">{submission.submittedAt || submission.deadline || 'N/A'}</span>
                     </td>
                     <td className="px-5 py-4">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
@@ -390,13 +403,13 @@ export function Reports() {
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button 
-                          onClick={() => toast.info(`Opening ${submission.grantName}...`)}
+                          onClick={() => toast.info(`Opening ${submission.title}...`)}
                           className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => toast.success(`Downloading ${submission.grantName}...`)}
+                          onClick={() => toast.success(`Downloading ${submission.title}...`)}
                           className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Download className="w-4 h-4" />
