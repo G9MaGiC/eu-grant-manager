@@ -186,6 +186,74 @@ export const useGrants = () => {
     fetchGrants();
   }, [fetchGrants]);
 
+  // Real-time subscriptions
+  useEffect(() => {
+    const setupSubscriptions = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Subscribe to grants changes
+      const grantsSubscription = supabase
+        .channel('grants_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'grants',
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            fetchGrants();
+          }
+        )
+        .subscribe();
+
+      // Subscribe to tasks changes
+      const tasksSubscription = supabase
+        .channel('tasks_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'tasks',
+          },
+          () => {
+            fetchGrants();
+          }
+        )
+        .subscribe();
+
+      // Subscribe to notes changes
+      const notesSubscription = supabase
+        .channel('notes_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notes',
+          },
+          () => {
+            fetchGrants();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        grantsSubscription.unsubscribe();
+        tasksSubscription.unsubscribe();
+        notesSubscription.unsubscribe();
+      };
+    };
+
+    const cleanup = setupSubscriptions();
+    return () => {
+      cleanup.then((unsubscribe) => unsubscribe?.());
+    };
+  }, [fetchGrants]);
+
   return {
     grants,
     loading,
@@ -279,6 +347,55 @@ export const useGrant = (grantId: string | null) => {
   useEffect(() => {
     fetchGrant();
   }, [fetchGrant]);
+
+  // Real-time subscription for single grant
+  useEffect(() => {
+    if (!grantId) return;
+
+    const subscription = supabase
+      .channel(`grant_${grantId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'grants',
+          filter: `id=eq.${grantId}`,
+        },
+        () => {
+          fetchGrant();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `grant_id=eq.${grantId}`,
+        },
+        () => {
+          fetchGrant();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notes',
+          filter: `grant_id=eq.${grantId}`,
+        },
+        () => {
+          fetchGrant();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [grantId, fetchGrant]);
 
   return {
     grant,

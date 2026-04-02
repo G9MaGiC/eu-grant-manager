@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
+import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   FileCheck, 
@@ -16,14 +17,15 @@ import {
   Calendar,
   CheckCircle2,
   MoreHorizontal,
-  RefreshCw
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
-import { dashboardStats, upcomingDeadlines, grants } from '@/data/mockData';
+import { useGrants } from '@/hooks/useGrants';
 import type { ViewType } from '@/types';
 import { toast } from 'sonner';
 
 interface DashboardProps {
-  onViewChange: (view: ViewType, grantId?: string) => void;
+  onViewChange?: (view: ViewType, grantId?: string) => void;
 }
 
 function AnimatedNumber({ value, prefix = '', suffix = '', duration = 1.2 }: { value: number; prefix?: string; suffix?: string; duration?: number }) {
@@ -95,6 +97,8 @@ export function Dashboard({ onViewChange }: DashboardProps) {
   const actionsRef = useRef<HTMLDivElement>(null);
   const recentRef = useRef<HTMLDivElement>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigate = useNavigate();
+  const { grants, loading, refetch } = useGrants();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -131,39 +135,60 @@ export function Dashboard({ onViewChange }: DashboardProps) {
     return () => ctx.revert();
   }, []);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
+    await refetch();
     toast.promise(
-      new Promise(resolve => setTimeout(resolve, 1500)),
+      new Promise(resolve => setTimeout(resolve, 500)),
       {
         loading: 'Refreshing dashboard data...',
         success: 'Dashboard updated successfully',
         error: 'Failed to refresh',
       }
     );
-    setTimeout(() => setIsRefreshing(false), 1500);
+    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   const handleGrantClick = (grantId: string) => {
-    onViewChange('grant-detail', grantId);
+    if (onViewChange) {
+      onViewChange('grant-detail', grantId);
+    } else {
+      navigate(`/grants/${grantId}`);
+    }
   };
 
   const handleQuickAction = (action: string) => {
     switch (action) {
       case 'find':
-        onViewChange('recommendations');
+        if (onViewChange) {
+          onViewChange('recommendations');
+        } else {
+          navigate('/recommendations');
+        }
         break;
       case 'draft':
-        onViewChange('builder');
+        if (onViewChange) {
+          onViewChange('builder');
+        } else {
+          navigate('/builder');
+        }
         break;
       case 'upload':
         toast.success('Document upload ready', {
           description: 'Select a grant to upload documents to',
         });
-        onViewChange('pipeline');
+        if (onViewChange) {
+          onViewChange('pipeline');
+        } else {
+          navigate('/pipeline');
+        }
         break;
       case 'report':
-        onViewChange('reports');
+        if (onViewChange) {
+          onViewChange('reports');
+        } else {
+          navigate('/reports');
+        }
         break;
     }
   };
@@ -180,9 +205,55 @@ export function Dashboard({ onViewChange }: DashboardProps) {
     return 'text-secondary';
   };
 
+  // Calculate stats from grants data
+  const stats = useMemo(() => {
+    const activeGrants = grants.filter(g => g.status !== 'awarded' && g.status !== 'rejected').length;
+    const fundingPipeline = grants
+      .filter(g => g.status !== 'rejected')
+      .reduce((sum, g) => sum + (g.estimatedValue || 0), 0);
+    const submissionsThisMonth = grants.filter(g => {
+      const grantDate = new Date(g.deadline);
+      const now = new Date();
+      return grantDate.getMonth() === now.getMonth() && grantDate.getFullYear() === now.getFullYear();
+    }).length;
+    return { activeGrants, fundingPipeline, submissionsThisMonth };
+  }, [grants]);
+
+  // Calculate upcoming deadlines from grants data
+  const upcomingDeadlines = useMemo(() => {
+    const now = new Date();
+    return grants
+      .filter(g => g.status !== 'awarded' && g.status !== 'rejected')
+      .map(g => {
+        const deadline = new Date(g.deadline);
+        const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        return {
+          grantId: g.id,
+          grantName: g.name,
+          deadline: g.deadline,
+          daysLeft,
+        };
+      })
+      .filter(d => d.daysLeft >= 0)
+      .sort((a, b) => a.daysLeft - b.daysLeft)
+      .slice(0, 5);
+  }, [grants]);
+
   // Mock chart data
   const pipelineData = [2.1, 2.5, 2.8, 3.2, 3.8, 4.2];
   const submissionsData = [1, 2, 1, 3, 2, 3];
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[400px]">
+        <div className="flex items-center gap-3 text-secondary">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="p-7 space-y-6">
@@ -207,7 +278,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Active grants</p>
-              <AnimatedNumber value={dashboardStats.activeGrants} />
+              <AnimatedNumber value={stats.activeGrants} />
               <div className="flex items-center gap-1 mt-2 text-green-500 text-xs">
                 <ArrowUpRight className="w-3 h-3" />
                 <span>+2 this month</span>
@@ -224,7 +295,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Funding pipeline</p>
-              <AnimatedNumber value={dashboardStats.fundingPipeline} prefix="€" />
+              <AnimatedNumber value={stats.fundingPipeline} prefix="€" />
               <div className="flex items-center gap-1 mt-2 text-green-500 text-xs">
                 <ArrowUpRight className="w-3 h-3" />
                 <span>+€850K from last month</span>
@@ -241,7 +312,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-secondary text-sm mb-1">Submissions this month</p>
-              <AnimatedNumber value={dashboardStats.submissionsThisMonth} />
+              <AnimatedNumber value={stats.submissionsThisMonth} />
               <div className="flex items-center gap-1 mt-2 text-secondary text-xs">
                 <Target className="w-3 h-3" />
                 <span>Target: 5</span>
@@ -267,7 +338,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
               </span>
             </div>
             <button 
-              onClick={() => onViewChange('pipeline')}
+              onClick={() => onViewChange ? onViewChange('pipeline') : navigate('/pipeline')}
               className="text-accent text-sm hover:underline flex items-center gap-1"
             >
               View all <ChevronRight className="w-4 h-4" />

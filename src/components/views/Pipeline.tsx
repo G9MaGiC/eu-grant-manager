@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { 
   Plus, 
@@ -15,14 +16,15 @@ import {
   X,
   Calendar,
   Euro,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from 'lucide-react';
-import { grants as initialGrants } from '@/data/mockData';
+import { useGrants } from '@/hooks/useGrants';
 import type { ViewType, GrantProgram, GrantStatus } from '@/types';
 import { toast } from 'sonner';
 
 interface PipelineProps {
-  onViewChange: (view: ViewType, grantId?: string) => void;
+  onViewChange?: (view: ViewType, grantId?: string) => void;
 }
 
 const programFilters: (GrantProgram | 'All')[] = [
@@ -75,9 +77,10 @@ const programColors: Record<GrantProgram, string> = {
 };
 
 export function Pipeline({ onViewChange }: PipelineProps) {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
-  const [grants, setGrants] = useState(initialGrants);
+  const { grants, loading, deleteGrant, createGrant, refetch } = useGrants();
   const [activeFilter, setActiveFilter] = useState<GrantProgram | 'All'>('All');
   const [statusFilter, setStatusFilter] = useState<GrantStatus | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,6 +92,7 @@ export function Pipeline({ onViewChange }: PipelineProps) {
   const [newGrantProgram, setNewGrantProgram] = useState<GrantProgram>('KPO');
   const [newGrantDeadline, setNewGrantDeadline] = useState('');
   const [newGrantValue, setNewGrantValue] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -102,7 +106,7 @@ export function Pipeline({ onViewChange }: PipelineProps) {
     }, containerRef);
 
     return () => ctx.revert();
-  }, [activeFilter, statusFilter, searchQuery, sortBy, sortOrder]);
+  }, [activeFilter, statusFilter, searchQuery, sortBy, sortOrder, grants]);
 
   const filteredGrants = grants.filter(grant => {
     const matchesProgram = activeFilter === 'All' || grant.program === activeFilter;
@@ -145,28 +149,40 @@ export function Pipeline({ onViewChange }: PipelineProps) {
   };
 
   const handleGrantClick = (grantId: string) => {
-    onViewChange('grant-detail', grantId);
+    navigate(`/grants/${grantId}`);
+    onViewChange?.('grant-detail', grantId);
   };
 
-  const handleDuplicate = (e: React.MouseEvent, grantId: string) => {
+  const handleDuplicate = async (e: React.MouseEvent, grantId: string) => {
     e.stopPropagation();
     const grant = grants.find(g => g.id === grantId);
     if (grant) {
-      const newGrant = {
-        ...grant,
-        id: `g${Date.now()}`,
-        name: `${grant.name} (Copy)`,
-        status: 'not-started' as GrantStatus,
-      };
-      setGrants([...grants, newGrant]);
-      toast.success('Grant duplicated successfully');
+      try {
+        await createGrant({
+          name: `${grant.name} (Copy)`,
+          program: grant.program,
+          deadline: grant.deadline,
+          status: 'not-started',
+          estimatedValue: grant.estimatedValue,
+          fitScore: grant.fitScore,
+          owner: grant.owner,
+          description: grant.description,
+        });
+        toast.success('Grant duplicated successfully');
+      } catch (err) {
+        // Error handled in hook
+      }
     }
   };
 
-  const handleDelete = (e: React.MouseEvent, grantId: string) => {
+  const handleDelete = async (e: React.MouseEvent, grantId: string) => {
     e.stopPropagation();
-    setGrants(grants.filter(g => g.id !== grantId));
-    toast.success('Grant deleted');
+    try {
+      await deleteGrant(grantId);
+      toast.success('Grant deleted');
+    } catch (err) {
+      // Error handled in hook
+    }
   };
 
   const handleBulkAction = (action: string) => {
@@ -206,7 +222,7 @@ export function Pipeline({ onViewChange }: PipelineProps) {
     setNewGrantValue('');
   };
 
-  const handleSubmitNewGrant = () => {
+  const handleSubmitNewGrant = async () => {
     if (!newGrantName.trim() || !newGrantDeadline || !newGrantValue) {
       toast.error('Please fill in all required fields');
       return;
@@ -218,25 +234,28 @@ export function Pipeline({ onViewChange }: PipelineProps) {
       return;
     }
 
-    const newGrant = {
-      id: `g${Date.now()}`,
-      name: newGrantName.trim(),
-      program: newGrantProgram,
-      deadline: newGrantDeadline,
-      status: 'not-started' as GrantStatus,
-      estimatedValue: value,
-      fitScore: Math.floor(Math.random() * 20) + 70, // Random fit score 70-90
-      owner: { name: 'A. Kowalski' },
-      description: 'New grant opportunity.',
-      tasks: [],
-      documents: [],
-      notes: [],
-      timeline: [{ id: `tm-${Date.now()}`, date: newGrantDeadline, title: 'Submit', type: 'deadline' as const }],
-    };
-    
-    setGrants([...grants, newGrant]);
-    toast.success('Grant added successfully');
-    setShowAddModal(false);
+    setIsCreating(true);
+    try {
+      await createGrant({
+        name: newGrantName.trim(),
+        program: newGrantProgram,
+        deadline: newGrantDeadline,
+        status: 'not-started',
+        estimatedValue: value,
+        fitScore: Math.floor(Math.random() * 20) + 70,
+        owner: { name: 'A. Kowalski' },
+        description: 'New grant opportunity.',
+      });
+      toast.success('Grant added successfully');
+      setShowAddModal(false);
+      setNewGrantName('');
+      setNewGrantDeadline('');
+      setNewGrantValue('');
+    } catch (err) {
+      // Error handled in hook
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const formatCurrency = (value: number) => {
@@ -253,9 +272,19 @@ export function Pipeline({ onViewChange }: PipelineProps) {
     ? Math.round(filteredGrants.reduce((sum, g) => sum + g.fitScore, 0) / filteredGrants.length) 
     : 0;
 
+  if (loading) {
+    return (
+      <div ref={containerRef} className="p-7 space-y-5">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 text-accent animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className="p-7 space-y-5">
-      {/* Header */}
+      {/* Header -->
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-primary">Pipeline</h1>
@@ -642,10 +671,17 @@ export function Pipeline({ onViewChange }: PipelineProps) {
               </button>
               <button 
                 onClick={handleSubmitNewGrant}
-                disabled={!newGrantName.trim() || !newGrantDeadline || !newGrantValue}
-                className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!newGrantName.trim() || !newGrantDeadline || !newGrantValue || isCreating}
+                className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Add Grant
+                {isCreating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  'Add Grant'
+                )}
               </button>
             </div>
           </div>

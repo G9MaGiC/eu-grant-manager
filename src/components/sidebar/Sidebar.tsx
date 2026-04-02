@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { 
   LayoutDashboard, 
@@ -32,6 +33,7 @@ import type { ViewType } from '@/types';
 import { toast } from 'sonner';
 import { HelpCenter } from '@/components/views/HelpCenter';
 import { useTheme } from '@/components/ThemeProvider';
+import { useAuth } from '@/hooks/useAuth';
 
 // Component to handle clicks outside a referenced element
 function ClickOutsideHandler({ 
@@ -68,7 +70,7 @@ function ClickOutsideHandler({
 
 interface SidebarProps {
   currentView: ViewType;
-  onViewChange: (view: ViewType) => void;
+  onViewChange?: (view: ViewType) => void;
   selectedGrantId?: string | null;
 }
 
@@ -111,6 +113,9 @@ const navItems: NavItem[] = [
 ];
 
 export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { signOut, user } = useAuth();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -126,6 +131,7 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
     management: true,
   });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -140,13 +146,32 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
     }
   }, []);
 
+  const viewRoutes: Record<ViewType, string> = {
+    dashboard: '/',
+    pipeline: '/pipeline',
+    'grant-detail': selectedGrantId ? `/grants/${selectedGrantId}` : '/pipeline',
+    builder: '/builder',
+    reports: '/reports',
+    calendar: '/calendar',
+    recommendations: '/recommendations',
+    comparison: '/comparison',
+    budget: '/budget',
+    team: '/team',
+    settings: '/settings',
+  };
+
   const handleViewClick = (view: ViewType) => {
-    if (view === 'grant-detail' && !selectedGrantId) {
-      onViewChange('pipeline');
-    } else {
-      onViewChange(view);
-    }
+    const route = viewRoutes[view];
+    navigate(route);
+    onViewChange?.(view);
     setIsMobileOpen(false);
+  };
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    await signOut();
+    setIsSigningOut(false);
+    navigate('/auth');
   };
 
   const markAsRead = (id: string) => {
@@ -164,10 +189,10 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
-      case 'deadline': return <Clock className="w-4 h-4 text-red-500" />;
-      case 'success': return <Check className="w-4 h-4 text-green-500" />;
-      case 'warning': return <AlertCircle className="w-4 h-4 text-amber-500" />;
-      default: return <Sparkles className="w-4 h-4 text-indigo-500" />;
+      case 'deadline': return <Clock className="w-4 h-4 text-danger" />;
+      case 'success': return <Check className="w-4 h-4 text-success" />;
+      case 'warning': return <AlertCircle className="w-4 h-4 text-warning" />;
+      default: return <Sparkles className="w-4 h-4 text-accent" />;
     }
   };
 
@@ -411,7 +436,7 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
         </div>
 
         <button 
-          onClick={() => onViewChange('settings')}
+          onClick={() => navigate('/settings')}
           className={`sidebar-item w-full text-left ${currentView === 'settings' ? 'active' : ''}`}
           aria-label="Settings"
         >
@@ -434,12 +459,18 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-3 px-3 py-2 w-full hover:bg-tertiary rounded-xl transition-colors"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">AK</span>
+              <div className="w-9 h-9 bg-gradient-to-br from-accent to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </span>
               </div>
               <div className="flex-1 min-w-0 text-left">
-                <p className="text-primary text-sm font-medium truncate">A. Kowalski</p>
-                <p className="text-secondary text-xs truncate">Grant Officer</p>
+                <p className="text-primary text-sm font-medium truncate">
+                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                </p>
+                <p className="text-secondary text-xs truncate">
+                  {user?.user_metadata?.organization || 'Grant Officer'}
+                </p>
               </div>
               <ChevronDown className={`w-4 h-4 text-secondary transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
             </button>
@@ -451,7 +482,7 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
                   <button 
                     onClick={() => {
                       setShowUserMenu(false);
-                      onViewChange('settings');
+                      navigate('/settings');
                     }}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-tertiary rounded-lg transition-colors"
                   >
@@ -461,12 +492,13 @@ export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarP
                   <button 
                     onClick={() => {
                       setShowUserMenu(false);
-                      toast.success('Logged out successfully');
+                      handleSignOut();
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                    disabled={isSigningOut}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-danger/10 rounded-lg transition-colors disabled:opacity-50"
                   >
                     <LogOut className="w-4 h-4" />
-                    Log Out
+                    {isSigningOut ? 'Signing out...' : 'Sign Out'}
                   </button>
                 </div>
               </div>

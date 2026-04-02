@@ -23,22 +23,21 @@ import {
   History,
   Share2,
   Star,
-  Plus
+  Plus,
+  Loader2
 } from 'lucide-react';
-import { getGrantById } from '@/data/mockData';
-import type { ViewType, Task, Note } from '@/types';
+import { useGrant } from '@/hooks/useGrant';
+import { useParams, useNavigate } from 'react-router-dom';
+import type { Task, Note } from '@/types';
 import { toast } from 'sonner';
 
-interface GrantDetailProps {
-  grantId: string;
-  onViewChange: (view: ViewType, selectedGrantId?: string) => void;
-}
-
-export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
+export function GrantDetail() {
+  const { grantId } = useParams();
+  const navigate = useNavigate();
+  const { grant, loading } = useGrant(grantId || null);
   const containerRef = useRef<HTMLDivElement>(null);
   const leftPanelRef = useRef<HTMLDivElement>(null);
   const rightPanelRef = useRef<HTMLDivElement>(null);
-  const [grant, setGrant] = useState(getGrantById(grantId));
   const [tasks, setTasks] = useState<Task[]>(grant?.tasks || []);
   const [notes, setNotes] = useState<Note[]>(grant?.notes || []);
   const [newNote, setNewNote] = useState('');
@@ -53,11 +52,9 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
   const [newMemberRole, setNewMemberRole] = useState('Member');
 
   useEffect(() => {
-    const updatedGrant = getGrantById(grantId);
-    setGrant(updatedGrant);
-    setTasks(updatedGrant?.tasks || []);
-    setNotes(updatedGrant?.notes || []);
-  }, [grantId]);
+    setTasks(grant?.tasks || []);
+    setNotes(grant?.notes || []);
+  }, [grant]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -178,12 +175,23 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
   const completedTasks = tasks.filter(t => t.completed).length;
   const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
+  if (loading) {
+    return (
+      <div className="p-7 flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-accent animate-spin" />
+          <p className="text-secondary">Loading grant...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!grant) {
     return (
       <div className="p-7">
         <p className="text-secondary">Grant not found.</p>
         <button 
-          onClick={() => onViewChange('pipeline')}
+          onClick={() => navigate('/pipeline')}
           className="btn-primary mt-4"
         >
           Back to Pipeline
@@ -197,7 +205,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-5">
         <button 
-          onClick={() => onViewChange('pipeline')}
+          onClick={() => navigate('/pipeline')}
           className="flex items-center gap-2 text-secondary hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -243,7 +251,7 @@ export function GrantDetail({ grantId, onViewChange }: GrantDetailProps) {
               </div>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => onViewChange('builder')}
+                  onClick={() => navigate('/builder')}
                   className="btn-primary flex items-center gap-2"
                 >
                   <Edit3 className="w-4 h-4" />
