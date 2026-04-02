@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { 
   LayoutDashboard, 
@@ -114,7 +114,6 @@ const navItems: NavItem[] = [
 
 export function Sidebar({ currentView, onViewChange, selectedGrantId }: SidebarProps) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { signOut, user } = useAuth();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);

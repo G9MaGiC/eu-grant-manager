@@ -31,7 +31,7 @@ interface ComparisonGrant {
 
 
 interface GrantComparisonProps {
-  onViewChange: (view: ViewType, grantId?: string) => void;
+  onViewChange?: (view: ViewType, grantId?: string) => void;
 }
 
 export function GrantComparison({ onViewChange }: GrantComparisonProps) {
@@ -173,7 +173,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                       </div>
                       <h3 className="text-primary font-semibold mb-2 line-clamp-2">{grant.name}</h3>
                       <button 
-                        onClick={() => onViewChange('grant-detail', grant.id)}
+                        onClick={() => onViewChange?.('grant-detail', grant.id)}
                         className="text-accent text-sm hover:underline"
                       >
                         View details →
@@ -317,7 +317,7 @@ export function GrantComparison({ onViewChange }: GrantComparisonProps) {
                 {selectedGrants.map(grant => (
                   <td key={grant.id} className="p-4">
                     <button 
-                      onClick={() => onViewChange('builder')}
+                      onClick={() => onViewChange?.('builder')}
                       className="w-full btn-primary"
                     >
                       Start Application

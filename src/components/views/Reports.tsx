@@ -155,11 +155,6 @@ export function Reports() {
     toast.success('Share link copied to clipboard');
   };
 
-  const getGrantStatus = (grantId: string) => {
-    const grant = grants.find(g => g.id === grantId);
-    return grant?.status || 'unknown';
-  };
-
   if (loading) {
     return (
       <div className="p-7 flex items-center justify-center min-h-[400px]">
@@ -376,19 +371,15 @@ export function Reports() {
                         <div className="w-10 h-10 bg-accent/15 rounded-lg flex items-center justify-center">
                           <FileText className="w-5 h-5 text-accent" />
                         </div>
-                        <span className="text-primary font-medium">{submission.title}</span>
+                        <span className="text-primary font-medium">{submission.name}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-primary mono">{submission.submittedAt || submission.deadline || 'N/A'}</span>
+                      <span className="text-primary mono">{submission.deadline || 'N/A'}</span>
                     </td>
                     <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${
-                        submission.format === 'PDF' ? 'bg-[#EF4444]/15 text-[#EF4444]' :
-                        submission.format === 'Word' ? 'bg-[#3B82F6]/15 text-[#3B82F6]' :
-                        'bg-[#22C55E]/15 text-[#22C55E]'
-                      }`}>
-                        {submission.format}
+                      <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-[#EF4444]/15 text-[#EF4444]">
+                        PDF
                       </span>
                     </td>
                     <td className="px-5 py-4">
@@ -403,13 +394,13 @@ export function Reports() {
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <button 
-                          onClick={() => toast.info(`Opening ${submission.title}...`)}
+                          onClick={() => toast.info(`Opening ${submission.name}...`)}
                           className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => toast.success(`Downloading ${submission.title}...`)}
+                          onClick={() => toast.success(`Downloading ${submission.name}...`)}
                           className="p-2 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
                         >
                           <Download className="w-4 h-4" />

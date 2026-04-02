@@ -229,7 +229,11 @@ const createInitialSections = (): Section[] => [
   },
 ];
 
-export function ApplicationBuilder() {
+interface ApplicationBuilderProps {
+  onClose?: () => void;
+}
+
+export function ApplicationBuilder({ onClose }: ApplicationBuilderProps) {
   // Core State
   const [sections, setSections] = useState<Section[]>(createInitialSections());
   const [activeSectionId, setActiveSectionId] = useState('s1');
@@ -662,9 +666,20 @@ Suggestions:
       <div className="w-80 bg-secondary border-r border-theme flex flex-col">
         {/* Header */}
         <div className="p-5 border-b border-theme">
-          <div className="flex items-center gap-2 mb-3">
-            <FileText className="w-5 h-5 text-accent" />
-            <span className="text-xs font-medium text-secondary uppercase tracking-wider">Application</span>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-accent" />
+              <span className="text-xs font-medium text-secondary uppercase tracking-wider">Application</span>
+            </div>
+            {onClose && (
+              <button 
+                onClick={onClose}
+                className="p-1.5 text-secondary hover:text-primary hover:bg-tertiary rounded-lg transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
           <h2 className="text-lg font-semibold text-primary mb-4">KPO Project Description</h2>
           

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { supabase, getCurrentUser, getSession } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
@@ -10,7 +10,7 @@ export const useAuth = () => {
 
   useEffect(() => {
     // Get initial session
-    getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -108,7 +108,7 @@ export const useAuth = () => {
             organization: updates.organization,
             avatar_url: updates.avatar_url,
             updated_at: new Date().toISOString(),
-          });
+          } as any);
       }
 
       toast.success('Profile updated successfully');

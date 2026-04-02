@@ -207,9 +207,9 @@ export function Dashboard({ onViewChange }: DashboardProps) {
 
   // Calculate stats from grants data
   const stats = useMemo(() => {
-    const activeGrants = grants.filter(g => g.status !== 'awarded' && g.status !== 'rejected').length;
+    const activeGrants = grants.filter(g => g.status !== 'won' && g.status !== 'archived').length;
     const fundingPipeline = grants
-      .filter(g => g.status !== 'rejected')
+      .filter(g => g.status !== 'archived')
       .reduce((sum, g) => sum + (g.estimatedValue || 0), 0);
     const submissionsThisMonth = grants.filter(g => {
       const grantDate = new Date(g.deadline);
@@ -223,7 +223,7 @@ export function Dashboard({ onViewChange }: DashboardProps) {
   const upcomingDeadlines = useMemo(() => {
     const now = new Date();
     return grants
-      .filter(g => g.status !== 'awarded' && g.status !== 'rejected')
+      .filter(g => g.status !== 'won' && g.status !== 'archived')
       .map(g => {
         const deadline = new Date(g.deadline);
         const daysLeft = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));

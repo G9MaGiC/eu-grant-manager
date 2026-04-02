@@ -26,7 +26,7 @@ import {
   Plus,
   Loader2
 } from 'lucide-react';
-import { useGrant } from '@/hooks/useGrant';
+import { useGrant } from '@/hooks/useGrants';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Task, Note } from '@/types';
 import { toast } from 'sonner';
@@ -399,7 +399,7 @@ export function GrantDetail() {
                   </button>
                 </div>
                 <div className="space-y-2">
-                  {grant.documents?.map((doc) => (
+                  {grant.documents?.map((doc: { id: string; name: string; size: string; uploadedAt: string }) => (
                     <div 
                       key={doc.id}
                       className="flex items-center gap-3 p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors group"
@@ -437,7 +437,7 @@ export function GrantDetail() {
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {grant.documents?.map((doc) => (
+                {grant.documents?.map((doc: { id: string; name: string; size: string; uploadedAt: string }) => (
                   <div 
                     key={doc.id}
                     className="p-4 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer group"

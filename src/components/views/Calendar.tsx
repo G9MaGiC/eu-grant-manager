@@ -14,7 +14,7 @@ import type { ViewType } from '@/types';
 import { toast } from 'sonner';
 
 interface CalendarProps {
-  onViewChange: (view: ViewType, grantId?: string) => void;
+  onViewChange?: (view: ViewType, grantId?: string) => void;
 }
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -176,7 +176,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 key={i}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onViewChange('grant-detail', grant.id);
+                  onViewChange?.('grant-detail', grant.id);
                 }}
                 className={`px-2 py-1 rounded text-xs truncate cursor-pointer ${
                   grant.deadline === dateStr
@@ -340,7 +340,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                   getGrantEvents(selectedDate).map((event, i) => (
                     <div 
                       key={i}
-                      onClick={() => onViewChange('grant-detail', event.id)}
+                      onClick={() => onViewChange?.('grant-detail', event.id)}
                       className="p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-2 mb-1">
@@ -374,7 +374,7 @@ export function Calendar({ onViewChange }: CalendarProps) {
                 return (
                   <div 
                     key={i}
-                    onClick={() => onViewChange('grant-detail', grant.id)}
+                    onClick={() => onViewChange?.('grant-detail', grant.id)}
                     className="flex items-center gap-3 p-3 bg-tertiary rounded-xl hover:bg-surface-hover transition-colors cursor-pointer"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${

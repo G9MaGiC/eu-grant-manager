@@ -4,19 +4,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Dashboard } from '@/components/views/Dashboard';
-import { Pipeline } from '@/components/views/Pipeline';
-import { GrantDetail } from '@/components/views/GrantDetail';
-import { ApplicationBuilder } from '@/components/views/ApplicationBuilder';
-import { Reports } from '@/components/views/Reports';
-import { Settings } from '@/components/views/Settings';
-import { Calendar } from '@/components/views/Calendar';
-import { Recommendations } from '@/components/views/Recommendations';
-import { GrantComparison } from '@/components/views/GrantComparison';
-import { BudgetCalculator } from '@/components/views/BudgetCalculator';
-import { TeamManagement } from '@/components/views/TeamManagement';
-import { HelpCenter } from '@/components/views/HelpCenter';
-import { Loader2 } from 'lucide-react';
 import './App.css';
 
 // Loading screen
@@ -33,9 +20,25 @@ function LoadingScreen() {
   );
 }
 
+// Import views
+import { Dashboard } from '@/components/views/Dashboard';
+import { Pipeline } from '@/components/views/Pipeline';
+import { GrantDetail } from '@/components/views/GrantDetail';
+import { ApplicationBuilder } from '@/components/views/ApplicationBuilder';
+import { Reports } from '@/components/views/Reports';
+import { Settings } from '@/components/views/Settings';
+import { Calendar } from '@/components/views/Calendar';
+import { Recommendations } from '@/components/views/Recommendations';
+import { GrantComparison } from '@/components/views/GrantComparison';
+import { BudgetCalculator } from '@/components/views/BudgetCalculator';
+import { TeamManagement } from '@/components/views/TeamManagement';
+import { HelpCenter } from '@/components/views/HelpCenter';
+
 // App routes component
 function AppRoutes() {
   const { user, loading } = useAuth();
+  
+  const noop = () => {};
 
   if (loading) {
     return <LoadingScreen />;
@@ -61,7 +64,7 @@ function AppRoutes() {
         <Route index element={<Dashboard />} />
         <Route path="pipeline" element={<Pipeline />} />
         <Route path="grants/:grantId" element={<GrantDetail />} />
-        <Route path="builder" element={<ApplicationBuilder />} />
+        <Route path="builder" element={<ApplicationBuilder onClose={noop} />} />
         <Route path="reports" element={<Reports />} />
         <Route path="calendar" element={<Calendar />} />
         <Route path="recommendations" element={<Recommendations />} />
@@ -69,7 +72,7 @@ function AppRoutes() {
         <Route path="budget" element={<BudgetCalculator />} />
         <Route path="team" element={<TeamManagement />} />
         <Route path="settings" element={<Settings />} />
-        <Route path="help" element={<HelpCenter />} />
+        <Route path="help" element={<HelpCenter onClose={noop} />}/>
       </Route>
 
       {/* Catch all */}

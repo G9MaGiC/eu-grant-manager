@@ -99,7 +99,7 @@ const mockRecommendations: Recommendation[] = [
 ];
 
 interface RecommendationsProps {
-  onViewChange: (view: ViewType, grantId?: string) => void;
+  onViewChange?: (view: ViewType, grantId?: string) => void;
 }
 
 export function Recommendations({ onViewChange }: RecommendationsProps) {
@@ -394,7 +394,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                 <button 
                   onClick={() => {
                     toast.success('Added to pipeline');
-                    onViewChange('pipeline');
+                    onViewChange?.('pipeline');
                   }}
                   className="btn-primary flex items-center gap-2 text-sm"
                 >
@@ -540,7 +540,7 @@ export function Recommendations({ onViewChange }: RecommendationsProps) {
                   onClick={() => {
                     toast.success('Added to pipeline');
                     setShowDetailsModal(false);
-                    onViewChange('pipeline');
+                    onViewChange?.('pipeline');
                   }}
                   className="flex-1 btn-primary py-3"
                 >

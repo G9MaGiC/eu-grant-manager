@@ -36,7 +36,13 @@ export const useGrants = () => {
       if (grantsError) throw grantsError;
 
       // Fetch related data for each grant
-      const grantIds = grantsData?.map(g => g.id) || [];
+      const grantIds = (grantsData as any[])?.map(g => g.id) || [];
+      
+      if (grantIds.length === 0) {
+        setGrants([]);
+        setLoading(false);
+        return;
+      }
 
       const [{ data: tasks }, { data: documents }, { data: notes }, { data: timeline }] = await Promise.all([
         supabase.from('tasks').select('*').in('grant_id', grantIds),
@@ -46,7 +52,13 @@ export const useGrants = () => {
       ]);
 
       // Transform to match our Grant type
-      const transformedGrants: GrantWithRelations[] = (grantsData || []).map(grant => ({
+      const grantsArr = grantsData as any[] || [];
+      const tasksArr = tasks as any[] || [];
+      const documentsArr = documents as any[] || [];
+      const notesArr = notes as any[] || [];
+      const timelineArr = timeline as any[] || [];
+      
+      const transformedGrants: GrantWithRelations[] = grantsArr.map(grant => ({
         id: grant.id,
         name: grant.name,
         program: grant.program as GrantProgram,
@@ -58,34 +70,34 @@ export const useGrants = () => {
           name: grant.owner_name,
         },
         description: grant.description || undefined,
-        tasks: (tasks || [])
-          .filter(t => t.grant_id === grant.id)
-          .map(t => ({
+        tasks: tasksArr
+          .filter((t: any) => t.grant_id === grant.id)
+          .map((t: any) => ({
             id: t.id,
             title: t.title,
             completed: t.completed,
             dueDate: t.due_date || undefined,
           })),
-        documents: (documents || [])
-          .filter(d => d.grant_id === grant.id)
-          .map(d => ({
+        documents: documentsArr
+          .filter((d: any) => d.grant_id === grant.id)
+          .map((d: any) => ({
             id: d.id,
             name: d.name,
             size: d.size,
             type: d.type,
             uploadedAt: d.uploaded_at,
           })),
-        notes: (notes || [])
-          .filter(n => n.grant_id === grant.id)
-          .map(n => ({
+        notes: notesArr
+          .filter((n: any) => n.grant_id === grant.id)
+          .map((n: any) => ({
             id: n.id,
             content: n.content,
             createdAt: n.created_at,
             author: n.author,
           })),
-        timeline: (timeline || [])
-          .filter(t => t.grant_id === grant.id)
-          .map(t => ({
+        timeline: timelineArr
+          .filter((t: any) => t.grant_id === grant.id)
+          .map((t: any) => ({
             id: t.id,
             date: t.date,
             title: t.title,
@@ -121,7 +133,7 @@ export const useGrants = () => {
           owner_name: grantData.owner.name,
           description: grantData.description,
           user_id: user.id,
-        })
+        } as any)
         .select()
         .single();
 
@@ -139,18 +151,20 @@ export const useGrants = () => {
 
   const updateGrant = useCallback(async (id: string, updates: Partial<Grant>) => {
     try {
-      const { error } = await supabase
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.program !== undefined) updateData.program = updates.program;
+      if (updates.deadline !== undefined) updateData.deadline = updates.deadline;
+      if (updates.status !== undefined) updateData.status = updates.status;
+      if (updates.estimatedValue !== undefined) updateData.estimated_value = updates.estimatedValue;
+      if (updates.fitScore !== undefined) updateData.fit_score = updates.fitScore;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      
+      const { error } = await (supabase as any)
         .from('grants')
-        .update({
-          name: updates.name,
-          program: updates.program,
-          deadline: updates.deadline,
-          status: updates.status,
-          estimated_value: updates.estimatedValue,
-          fit_score: updates.fitScore,
-          description: updates.description,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id);
 
       if (error) throw error;
@@ -296,38 +310,44 @@ export const useGrant = (grantId: string | null) => {
         supabase.from('timeline_events').select('*').eq('grant_id', grantId),
       ]);
 
+      const grantDataAny = grantData as any;
+      const tasksArr = tasks as any[] || [];
+      const documentsArr = documents as any[] || [];
+      const notesArr = notes as any[] || [];
+      const timelineArr = timeline as any[] || [];
+      
       const transformedGrant: GrantWithRelations = {
-        id: grantData.id,
-        name: grantData.name,
-        program: grantData.program as GrantProgram,
-        deadline: grantData.deadline,
-        status: grantData.status as GrantStatus,
-        estimatedValue: grantData.estimated_value,
-        fitScore: grantData.fit_score,
+        id: grantDataAny.id,
+        name: grantDataAny.name,
+        program: grantDataAny.program as GrantProgram,
+        deadline: grantDataAny.deadline,
+        status: grantDataAny.status as GrantStatus,
+        estimatedValue: grantDataAny.estimated_value,
+        fitScore: grantDataAny.fit_score,
         owner: {
-          name: grantData.owner_name,
+          name: grantDataAny.owner_name,
         },
-        description: grantData.description || undefined,
-        tasks: (tasks || []).map(t => ({
+        description: grantDataAny.description || undefined,
+        tasks: tasksArr.map((t: any) => ({
           id: t.id,
           title: t.title,
           completed: t.completed,
           dueDate: t.due_date || undefined,
         })),
-        documents: (documents || []).map(d => ({
+        documents: documentsArr.map((d: any) => ({
           id: d.id,
           name: d.name,
           size: d.size,
           type: d.type,
           uploadedAt: d.uploaded_at,
         })),
-        notes: (notes || []).map(n => ({
+        notes: notesArr.map((n: any) => ({
           id: n.id,
           content: n.content,
           createdAt: n.created_at,
           author: n.author,
         })),
-        timeline: (timeline || []).map(t => ({
+        timeline: timelineArr.map((t: any) => ({
           id: t.id,
           date: t.date,
           title: t.title,

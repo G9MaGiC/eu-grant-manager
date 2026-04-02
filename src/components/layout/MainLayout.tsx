@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Toaster } from 'sonner';
 import { Sidebar } from '@/components/sidebar/Sidebar';
 import { WelcomeTour } from '@/components/WelcomeTour';
 import type { ViewType } from '@/types';
